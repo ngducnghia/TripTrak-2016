@@ -9,7 +9,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
     <Page.Resources>
-        <!-- This DataTemplate provides the UI for the locations as they appear in the MapControl. -->
         <DataTemplate x:Key="InputMapItemTemplate" x:DataType="loc:LocationPin">
             <Grid>
                 <!-- The geopoint icon is used for the current location. -->
