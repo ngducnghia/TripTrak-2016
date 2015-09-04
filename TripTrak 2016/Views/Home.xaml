@@ -1,0 +1,97 @@
+﻿<Page
+    x:Class="TripTrak_2016.Views.Home"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TripTrak_2016.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:loc="using:TripTrak_2016.Model"
+    xmlns:maps="using:Windows.UI.Xaml.Controls.Maps"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <Page.Resources>
+        <!-- This DataTemplate provides the UI for the locations as they appear in the MapControl. -->
+        <DataTemplate x:Key="InputMapItemTemplate" x:DataType="loc:LocationPin">
+            <Grid>
+                <!-- The geopoint icon is used for the current location. -->
+                <TextBlock Text="&#xEB49;" Foreground="Black" FontFamily="Segoe MDL2 Assets" FontSize="32" 
+                    Visibility="{x:Bind IsCurrentLocation, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    maps:MapControl.Location="{x:Bind Geopoint, Mode=OneWay}" 
+                    maps:MapControl.NormalizedAnchorPoint="{x:Bind NormalizedAnchorPoint, Mode=OneWay}"/>
+                <!-- The geopoint icon is used for the current location. -->
+                <Button  x:Name="mapItemButton"  Background="Transparent" >
+                    <Border BorderBrush="{Binding IsSelected, Converter={StaticResource ActivatedBrushConverter}}" BorderThickness="3">
+                        <!-- The custom map pin image is used for saved locations. -->
+                        <Image Source="{Binding ImageSource, Mode=OneWay}" MaxWidth="80" MaxHeight="80" Stretch="Uniform"
+                    Visibility="{x:Bind IsCurrentLocation, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Reverse}"
+                    maps:MapControl.Location="{x:Bind Geopoint, Mode=OneWay}" 
+                    maps:MapControl.NormalizedAnchorPoint="{x:Bind NormalizedAnchorPoint, Mode=OneWay}"/>
+                    </Border>
+                </Button>
+            </Grid>
+        </DataTemplate>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- TODO Replace the placeholder string below with your own Bing Maps key from https://www.bingmapsportal.com -->
+        <maps:MapControl x:Name="InputMap" 
+                         LandmarksVisible="True" 
+                         BusinessLandmarksVisible="False" 
+                         WatermarkMode="On" 
+                         ZoomInteractionMode="GestureAndControl"
+                         Grid.RowSpan="3" Grid.ColumnSpan="3"
+                         TrafficFlowVisible="True"
+                         Style="Road"
+            MapServiceToken="0KEyuXXhxVaOAIXwgvLA~doIeC1quhF2yDcbmlTYc6Q~AqLMibILNUu-ftoKwCf3whcS97LHNcNfVxjhwPQUQiMtbTSuQJHkbZeYm-z-05UY">
+
+            <maps:MapItemsControl  ItemsSource="{x:Bind ViewModel.PinnedLocations}" ItemTemplate="{StaticResource InputMapItemTemplate}"/>
+        </maps:MapControl>
+        <Grid x:Name="InformationDisplayGrid" Grid.Row="0" Grid.ColumnSpan="3"
+              Background="White" Margin="5" MinWidth="330">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="&#xEB49;" Grid.Column="0" Grid.Row="0" Margin="5" Foreground="Black" FontFamily="Segoe MDL2 Assets" FontSize="26" />
+            <StackPanel Grid.Column="1" Grid.Row="0" Margin="10,5">
+                <TextBlock Text="{x:Bind ViewModel.PinDisplayInformation.FormattedLatLon, Mode=OneWay, TargetNullValue=''}" FontSize="12" TextWrapping="Wrap"/>
+                <TextBlock Text="{x:Bind ViewModel.PinDisplayInformation.Address, Mode=OneWay, TargetNullValue=''}" FontSize="12" TextWrapping="Wrap"/>
+            </StackPanel>
+            <TextBlock Text="&#xE1CF;" Grid.Column="0" Grid.Row="1" Margin="9,0,5,0" Foreground="Black" FontFamily="Segoe MDL2 Assets" FontSize="18"/>
+            <TextBlock Text="{x:Bind ViewModel.PinDisplayInformation.Name, Mode=OneWay, TargetNullValue=''}"
+                           Foreground="CornflowerBlue" Margin="10,0" Grid.Column="1" Grid.Row="1" TextWrapping="Wrap"/>
+
+        </Grid>
+        <StackPanel Grid.Row="1" Grid.Column="0">
+            <Button ToolTipService.ToolTip="map options" Content="&#xE81E;" 
+                    Style="{StaticResource RoundButton}" Background="Transparent"
+                    FontFamily="Segoe MDL2 Assets" FontSize="22" Margin="10">
+            </Button>
+            <Button ToolTipService.ToolTip="current location" Content="&#xE1D2;" 
+                    Style="{StaticResource RoundButton}" Background="Transparent"
+                    FontFamily="Segoe MDL2 Assets" FontSize="22" Margin="10">
+            </Button>
+        </StackPanel>
+        <StackPanel Grid.Row="2" Grid.Column="2">
+            <Button ToolTipService.ToolTip="current location" Content="&#xE114;" 
+                    Style="{StaticResource RoundButton}" Padding="15" Foreground="White" Background="CornflowerBlue"
+                    FontFamily="Segoe MDL2 Assets" FontSize="28" Margin="10"/>
+        </StackPanel>
+
+    </Grid>
+</Page>
