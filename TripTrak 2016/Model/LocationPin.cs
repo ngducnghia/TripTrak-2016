@@ -36,6 +36,31 @@ namespace TripTrak_2016.Model
             set { this.SetProperty(ref this.address, value); }
         }
 
+        private SharedPhoto photo;
+        /// <summary>
+        /// Gets or sets the address of the location.
+        /// </summary>
+        public SharedPhoto Photo
+        {
+            get { return this.photo; }
+            set { this.SetProperty(ref this.photo, value); }
+        }
+
+
+        private bool isCheckPoint = false;
+        /// <summary>
+        /// Gets or sets a value that indicates whether the location is 
+        /// the Check point in the list of saved locations.
+        /// </summary>
+        public bool IsCheckPoint
+        {
+            get { return this.isCheckPoint; }
+            set
+            {
+                this.SetProperty(ref this.isCheckPoint, value);
+            }
+        }
+
         private BasicGeoposition position;
         /// <summary>
         /// Gets the geographic position of the location.
@@ -51,6 +76,25 @@ namespace TripTrak_2016.Model
             }
         }
 
+        private DateTimeOffset dateCreated = DateTimeOffset.Now;
+        /// <summary>
+        /// Gets or sets a value that indicates when the travel info was last updated. 
+        /// </summary>
+        public DateTimeOffset DateCreated
+        {
+            get
+            {
+                if (IsCurrentLocation)
+                    return DateTimeOffset.Now;
+                else
+                    return this.dateCreated;
+            }
+            set
+            {
+                this.SetProperty(ref this.dateCreated, value);
+            }
+        }
+
         /// <summary>
         /// Gets a Geopoint representation of the current location for use with the map service APIs.
         /// </summary>
@@ -60,6 +104,7 @@ namespace TripTrak_2016.Model
         /// <summary>
         /// Gets or sets a value that indicates whether the location represents the user's current location.
         /// </summary>
+        [IgnoreDataMember]
         public bool IsCurrentLocation
         {
             get { return this.isCurrentLocation; }
@@ -82,24 +127,6 @@ namespace TripTrak_2016.Model
             set
             {
                 this.SetProperty(ref this.isSelected, value);
-                this.OnPropertyChanged(nameof(ImageSource));
-            }
-        }
-
-        ///// <summary>
-        ///// Gets a path to an image to use as a map pin, reflecting the IsSelected property value. 
-        ///// </summary>
-        //public string ImageSource => IsSelected ? "Assets/mappin-yellow.png" : "Assets/mappin.png";
-
-
-        private BitmapImage imageSource;
-        public BitmapImage ImageSource
-        {
-            get { return imageSource; }
-            set
-            {
-                imageSource = value;
-                OnPropertyChanged();
             }
         }
 
@@ -109,6 +136,7 @@ namespace TripTrak_2016.Model
         /// Gets a value for the MapControl.NormalizedAnchorPoint attached property
         /// to reflect the different map icon used for the user's current location. 
         /// </summary>
+        [IgnoreDataMember]
         public Point NormalizedAnchorPoint => IsCurrentLocation ? pinpoint : pinpoint;
 
         private MapRoute fastestRoute;
@@ -128,6 +156,7 @@ namespace TripTrak_2016.Model
         /// Gets or sets the number of minutes it takes to drive to the location,
         /// without taking traffic into consideration.
         /// </summary>
+        [IgnoreDataMember]
         public int CurrentTravelTimeWithoutTraffic
         {
             get { return this.currentTravelTimeWithoutTraffic; }
@@ -139,6 +168,7 @@ namespace TripTrak_2016.Model
         /// Gets or sets the number of minutes it takes to drive to the location,
         /// taking traffic into consideration.
         /// </summary>
+        [IgnoreDataMember]
         public int CurrentTravelTime
         {
             get { return this.currentTravelTime; }
@@ -160,6 +190,7 @@ namespace TripTrak_2016.Model
         /// <summary>
         /// Gets or sets the current driving distance to the location, in miles.
         /// </summary>
+        [IgnoreDataMember]
         public double CurrentTravelDistance
         {
             get { return this.currentTravelDistance; }
@@ -173,39 +204,24 @@ namespace TripTrak_2016.Model
         /// <summary>
         /// Gets a display-string representation of the lat and lon.
         /// </summary>
+        [IgnoreDataMember]
         public string FormattedLatLon => 1 > 0 ?
             $"{this.Position.Latitude}, {this.Position.Longitude}, {this.Position.Altitude}" : this.Name;
 
         /// <summary>
         /// Gets a display-string representation of the current travel distance.
         /// </summary>
+        [IgnoreDataMember]
         public string FormattedCurrentTravelDistance =>
             this.CurrentTravelDistance == 0 ? "?? miles" :
             this.CurrentTravelDistance + " miles";
 
-        private DateTimeOffset dateCreated;
-        /// <summary>
-        /// Gets or sets a value that indicates when the travel info was last updated. 
-        /// </summary>
-        public DateTimeOffset DateCreated
-        {
-            get
-            {
-                if (IsCurrentLocation)
-                    return DateTimeOffset.Now;
-                else
-                    return this.dateCreated;
-            }
-            set
-            {
-                this.SetProperty(ref this.dateCreated, value);
-            }
-        }
 
         private DateTimeOffset timestamp;
         /// <summary>
         /// Gets or sets a value that indicates when the travel info was last updated. 
         /// </summary>
+        [IgnoreDataMember]
         public DateTimeOffset Timestamp
         {
             get { return this.timestamp; }
@@ -224,6 +240,7 @@ namespace TripTrak_2016.Model
         /// <summary>
         /// Gets a display-string representation of the freshness timestamp. 
         /// </summary>
+        [IgnoreDataMember]
         public string FormattedTimeStamp
         {
             get
@@ -239,20 +256,11 @@ namespace TripTrak_2016.Model
         /// Gets or sets a value that indicates whether this location is 
         /// being monitored for an increase in travel time due to traffic. 
         /// </summary>
+        [IgnoreDataMember]
         public bool IsMonitored
         {
             get { return this.isMonitored; }
             set { this.SetProperty(ref this.isMonitored, value); }
-        }
-
-        /// <summary>
-        /// Resets the travel time and distance values to 0, which indicates an unknown value.
-        /// </summary>
-        public void ClearTravelInfo()
-        {
-            this.CurrentTravelDistance = 0;
-            this.currentTravelTime = 0;
-            this.Timestamp = DateTimeOffset.Now;
         }
 
         /// <summary>
@@ -262,61 +270,14 @@ namespace TripTrak_2016.Model
         public override string ToString() => String.IsNullOrEmpty(this.Name) ?
             $"{this.Position.Latitude}, {this.Position.Longitude}" : this.Name;
 
-        /// <summary>
-        /// Return a new LocationData with the same property values as the current one.
-        /// </summary>
-        /// <returns>The new LocationData instance.</returns>
-        public LocationPin Clone()
-        {
-            var location = new LocationPin();
-            location.Copy(this);
-            return location;
-        }
-
-        /// <summary>
-        /// Copies the property values of the current location into the specified location.
-        /// </summary>
-        /// <param name="location">The location to receive the copied values.</param>
-        public void Copy(LocationPin location)
-        {
-            this.Name = location.Name;
-            this.Address = location.Address;
-            this.Position = location.Position;
-            this.CurrentTravelDistance = location.CurrentTravelDistance;
-            this.CurrentTravelTime = location.CurrentTravelTime;
-            this.Timestamp = location.Timestamp;
-            this.IsMonitored = location.IsMonitored;
-        }
-
     }
 
-    public class SimpleLocationPin : BindableBase
+    public class SharedPhoto
     {
-
-        private BasicGeoposition position;
-        /// <summary>
-        /// Gets the geographic position of the location.
-        /// </summary>
-        public BasicGeoposition Position
-        {
-            get { return this.position; }
-            set { this.SetProperty(ref this.position, value); }
-        }
-
-        private DateTimeOffset dateCreated = DateTimeOffset.Now;
-        /// <summary>
-        /// Gets or sets a value that indicates when the travel info was last updated. 
-        /// </summary>
-        public DateTimeOffset DateCreated
-        {
-            get
-            {
-                return this.dateCreated;
-            }
-            set
-            {
-                this.SetProperty(ref this.dateCreated, value);
-            }
-        }
+        public string ImageName { get; set; }
+        public string ShareWith { get; set; }
+        public string description { get; set; }
+        [IgnoreDataMember]
+        public BitmapImage ImageSource { get; set; }
     }
 }

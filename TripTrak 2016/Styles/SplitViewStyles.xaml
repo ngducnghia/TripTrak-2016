@@ -5,18 +5,18 @@
     <SolidColorBrush x:Key="SplitViewBackgroundBrush" Color="White" />
     <SolidColorBrush x:Key="SplitViewForegroundBrush" Color="Black" />
 
-    <SolidColorBrush x:Key="MenuButtonBackgroundBrush" Color="#ff4b0082" />
-    <SolidColorBrush x:Key="MenuButtonPressedBackgroundBrush" Color="#ff8b40c2" />
-    <SolidColorBrush x:Key="MenuButtonHoverBackgroundBrush" Color="#ff6b20a2" />
-    <SolidColorBrush x:Key="MenuButtonCheckedBackgroundBrush" Color="#ff4b0082" />
-    <SolidColorBrush x:Key="MenuButtonCheckedPressedBackgroundBrush" Color="#ff4b0082" />
-    <SolidColorBrush x:Key="MenuButtonCheckedHoverBackgroundBrush" Color="#ff4b0082" />
+    <SolidColorBrush x:Key="MenuButtonBackgroundBrush" Color="CornflowerBlue" />
+    <SolidColorBrush x:Key="MenuButtonPressedBackgroundBrush" Color="CadetBlue" />
+    <SolidColorBrush x:Key="MenuButtonHoverBackgroundBrush" Color="CornflowerBlue" />
+    <SolidColorBrush x:Key="MenuButtonCheckedBackgroundBrush" Color="CadetBlue" />
+    <SolidColorBrush x:Key="MenuButtonCheckedPressedBackgroundBrush" Color="CadetBlue" />
+    <SolidColorBrush x:Key="MenuButtonCheckedHoverBackgroundBrush" Color="CornflowerBlue" />
 
-    <SolidColorBrush x:Key="NavButtonPressedBackgroundBrush" Color="#ff606060" />
-    <SolidColorBrush x:Key="NavButtonHoverBackgroundBrush" Color="#ff404040" />
+    <SolidColorBrush x:Key="NavButtonPressedBackgroundBrush" Color="CadetBlue" />
+    <SolidColorBrush x:Key="NavButtonHoverBackgroundBrush" Color="CornflowerBlue" />
     <SolidColorBrush x:Key="NavButtonCheckedBackgroundBrush" Color="CornflowerBlue" />
-    <SolidColorBrush x:Key="NavButtonCheckedPressedBackgroundBrush" Color="#ffcb4040" />
-    <SolidColorBrush x:Key="NavButtonCheckedHoverBackgroundBrush" Color="#ffab2020" />
+    <SolidColorBrush x:Key="NavButtonCheckedPressedBackgroundBrush" Color="CadetBlue" />
+    <SolidColorBrush x:Key="NavButtonCheckedHoverBackgroundBrush" Color="CornflowerBlue" />
 
     <x:Double x:Key="SplitViewNormalNavFontSize">16</x:Double>
     <x:Double x:Key="SplitViewLargeNavFontSize">20</x:Double>

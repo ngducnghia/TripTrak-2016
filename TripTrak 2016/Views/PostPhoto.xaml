@@ -1,0 +1,65 @@
+﻿<Page
+    x:Class="TripTrak_2016.Views.PostPhoto"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TripTrak_2016.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid x:Name="Header" Grid.Row="0" Background="CornflowerBlue">
+
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Image x:Name="imageToPost" Source="ms-appx:///Assets/IMG_0013.JPG"   Height="250" Margin="0,10" />
+        </Grid>
+        <Grid x:Name="DescriptionGrid" Grid.Row="2" Margin="20,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="&#xE104;" Margin="10,0"  FontFamily="Segoe MDL2 Assets" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0"/>
+            <TextBox x:Name="DescriptionTb" PlaceholderText="Say something..." BorderThickness="0" Grid.Row="0" Grid.Column="1"/>
+            <TextBlock Text="&#xE12D;" Margin="10,0" FontFamily="Segoe MDL2 Assets" Foreground="Blue" VerticalAlignment="Center" Grid.Row="0" Grid.Column="2" FontSize="20"/>
+            <Border BorderBrush="Gray" BorderThickness="1.5"
+                    Grid.Row="1"  Margin="0,5" Background="Gray" Grid.ColumnSpan="3"/>
+
+            <TextBlock Text="&#xE1E2;" Margin="10,0"  FontFamily="Segoe MDL2 Assets" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0"/>
+            <TextBox x:Name="contactPickerTb" PlaceholderText="With ..." BorderThickness="0" Grid.Row="2" Grid.Column="1"/>
+            <TextBlock Text="&#xE753;" Margin="10,0" FontFamily="Segoe MDL2 Assets" Foreground="Blue" VerticalAlignment="Center" Grid.Row="2" Grid.Column="2" FontSize="20"/>
+            <Border BorderBrush="Gray" BorderThickness="1.5" Background="Gray"
+                    Grid.Row="3"  Margin="0,5"  Grid.ColumnSpan="3"/>
+            <TextBlock Text="&#xEB4A;" Margin="10,0"  FontFamily="Segoe MDL2 Assets" VerticalAlignment="Center" Grid.Row="4" Grid.Column="0"/>
+            <StackPanel Grid.Row="4" Grid.Column="1">
+                <TextBlock x:Name="LocationNameTbl" Foreground="CornflowerBlue" Text="Starbuck" FontWeight="SemiBold"/>
+                <TextBlock Text="Tap to change" FontSize="10"/>
+            </StackPanel>
+            <CheckBox Grid.Row="5" Margin="10" Grid.ColumnSpan="3"
+                    Content="Start a new trip" Foreground="CornflowerBlue"/>
+            <Button x:Name="CameraButton" Grid.Row="6" Content="&#xE122;"  Grid.ColumnSpan="3"
+                    ToolTipService.ToolTip="current location" HorizontalAlignment="Right" Margin="0,0,0,5"
+                    Style="{StaticResource RoundButton}" Padding="15" Foreground="White" Background="CornflowerBlue"
+                    FontFamily="Segoe MDL2 Assets" FontSize="28"/>
+        </Grid>
+
+    </Grid>
+</Page>
+

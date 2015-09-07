@@ -11,15 +11,14 @@
     <Page.Resources>
         <DataTemplate x:Key="InputMapItemTemplate" x:DataType="loc:LocationPin">
             <Grid>
-                <!-- The geopoint icon is used for the current location. -->
-                <TextBlock Text="&#xEB49;" Foreground="Black" FontFamily="Segoe MDL2 Assets" FontSize="32" 
+                
+                <TextBlock Text="&#xEB49;" Foreground="Blue" FontFamily="Segoe MDL2 Assets" FontSize="32" 
                     Visibility="{x:Bind IsCurrentLocation, Converter={StaticResource BooleanToVisibilityConverter}}"
                     maps:MapControl.Location="{x:Bind Geopoint, Mode=OneWay}" 
                     maps:MapControl.NormalizedAnchorPoint="{x:Bind NormalizedAnchorPoint, Mode=OneWay}"/>
-                <!-- The geopoint icon is used for the current location. -->
+ 
                 <Button  x:Name="mapItemButton"  Background="Transparent" >
                     <Border BorderBrush="{Binding IsSelected, Converter={StaticResource ActivatedBrushConverter}}" BorderThickness="3">
-                        <!-- The custom map pin image is used for saved locations. -->
                         <Image Source="{Binding ImageSource, Mode=OneWay}" MaxWidth="80" MaxHeight="80" Stretch="Uniform"
                     Visibility="{x:Bind IsCurrentLocation, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Reverse}"
                     maps:MapControl.Location="{x:Bind Geopoint, Mode=OneWay}" 
@@ -55,7 +54,9 @@
 
             <maps:MapItemsControl  ItemsSource="{x:Bind ViewModel.PinnedLocations}" ItemTemplate="{StaticResource InputMapItemTemplate}"/>
         </maps:MapControl>
+        
         <Grid x:Name="InformationDisplayGrid" Grid.Row="0" Grid.ColumnSpan="3"
+               Visibility="{x:Bind ViewModel.IsSimpleMap, Converter={StaticResource BooleanToVisibilityConverter}}"
               Background="White" Margin="5" MinWidth="330">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -76,20 +77,64 @@
                            Foreground="CornflowerBlue" Margin="10,0" Grid.Column="1" Grid.Row="1" TextWrapping="Wrap"/>
 
         </Grid>
+        <Grid Grid.Row="0" Grid.ColumnSpan="3"
+             Visibility="{x:Bind ViewModel.IsSimpleMap, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Reverse}" >
+            <StackPanel Orientation="Horizontal" Margin="10,0">
+                <Button x:Name="PrevDayButton" Content="&#xE00E;" FontFamily="Segoe MDL2 Assets"  Foreground="Black"/>
+                <DatePicker Style="{StaticResource TripTrakDatePicker}"/>
+                <Button x:Name="NextDayButton" Content="&#xE00F;" FontFamily="Segoe MDL2 Assets"  Foreground="Black"/>
+            </StackPanel>
+        </Grid>
         <StackPanel Grid.Row="1" Grid.Column="0">
-            <Button ToolTipService.ToolTip="map options" Content="&#xE81E;" 
-                    Style="{StaticResource RoundButton}" Background="Transparent"
+            <Button x:Name="MapOptionButton" ToolTipService.ToolTip="map options" Content="&#xE81E;" 
+                    Style="{StaticResource RoundButton}"
+                    Foreground="White" Background="CornflowerBlue"
                     FontFamily="Segoe MDL2 Assets" FontSize="22" Margin="10">
+                <Button.Flyout>
+                    <Flyout Placement="Right">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <!-- My Trips button -->
+                                <RadioButton  Width="80"  Tag="&#xE12B;" Click="RadioButton_Click" IsChecked="True"
+                                             Content="Road" Style="{StaticResource SplitViewNavButtonStyle}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <!-- My Trips button -->
+                                <RadioButton Width="80" Tag="&#xE128;" Click="RadioButton_Click" 
+                                             Content="Arial" Style="{StaticResource SplitViewNavButtonStyle}" />
+                            </StackPanel>
+                           
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
             </Button>
-            <Button ToolTipService.ToolTip="current location" Content="&#xE1D2;" 
-                    Style="{StaticResource RoundButton}" Background="Transparent"
+            <Button Tag="CurrentLocation" ToolTipService.ToolTip="current location" Content="&#xE1D2;" 
+                    Click="Button_Click" Style="{StaticResource RoundButton}"
+                    Foreground="White" Background="CornflowerBlue"
                     FontFamily="Segoe MDL2 Assets" FontSize="22" Margin="10">
             </Button>
         </StackPanel>
         <StackPanel Grid.Row="2" Grid.Column="2">
-            <Button ToolTipService.ToolTip="current location" Content="&#xE114;" 
+            <Button x:Name="CameraButton" ToolTipService.ToolTip="current location" Content="&#xE114;" 
                     Style="{StaticResource RoundButton}" Padding="15" Foreground="White" Background="CornflowerBlue"
-                    FontFamily="Segoe MDL2 Assets" FontSize="28" Margin="10"/>
+                    FontFamily="Segoe MDL2 Assets" FontSize="28" Margin="10">
+                <Button.Flyout>
+                    <Flyout>
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <!-- My Trips button -->
+                                <RadioButton Width="150" Tag="&#xE114;" 
+                                             Content="Take Photo" Style="{StaticResource SplitViewNavButtonStyle}" Click="RadioButton_Click" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <!-- My Trips button -->
+                                <RadioButton  Width="150"  Tag="&#xE1D3;"
+                                             Content="Photo Library" Style="{StaticResource SplitViewNavButtonStyle}" Click="RadioButton_Click" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
         </StackPanel>
 
     </Grid>

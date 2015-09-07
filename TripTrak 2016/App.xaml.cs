@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using TripTrak_2016.Model;
 using TripTrak_2016.Views;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
@@ -24,6 +25,9 @@ namespace TripTrak_2016
     /// </summary>
     sealed partial class App : Application
     {
+        public static LocationPin currentLocation = new LocationPin();
+        public static bool isSimpleMap = true;
+        public static string PageName = "TripTrak";
         private Frame _rootFrame;
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code

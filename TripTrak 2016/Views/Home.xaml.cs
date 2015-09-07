@@ -14,6 +14,7 @@ using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Networking.Connectivity;
+using Windows.Storage;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -23,6 +24,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
@@ -40,15 +42,21 @@ namespace TripTrak_2016.Views
         {
             this.InitializeComponent();
             this.ViewModel = new HomeViewModel();
+            this.ViewModel.IsSimpleMap = App.isSimpleMap;
         }
 
         /// <summary>
         /// Loads the saved location data on first navigation, and 
         /// attaches a Geolocator.StatusChanged event handler. 
         /// </summary>
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+
+            if (e.NavigationMode == NavigationMode.New)
+            {
+                this.ViewModel.PinnedLocations = await LocalDataStorage.GetAllLocationPins();
+            }
             // Start handling Geolocator and network status changes after loading the data 
             // so that the view doesn't get refreshed before there is something to show.
             LocationHelper.Geolocator.StatusChanged += Geolocator_StatusChanged;
@@ -81,14 +89,12 @@ namespace TripTrak_2016.Views
             {
                 if (args.Position.Coordinate.Accuracy < 55)
                 {
-                    var item = new SimpleLocationPin
+                    var item = new LocationPin
                     {
                         Position = args.Position.Coordinate.Point.Position
                     };
-                    //App.userLocData.Add(item);
-                    //await LocationDataStore.InsertLocationDataAsync(item);
+                    await LocalDataStorage.InsertLocationDataAsync(item);
                 }
-
             });
         }
 
@@ -175,7 +181,7 @@ namespace TripTrak_2016.Views
         }
         #endregion
         #region private method
-                /// <summary>
+        /// <summary>
         /// Updates the UI to account for the user's current position, if available, 
         /// resetting the MapControl bounds and refreshing the travel info. 
         /// </summary>
@@ -211,6 +217,7 @@ namespace TripTrak_2016.Views
         private async Task<LocationPin> GetCurrentLocationAsync()
         {
             var currentLocation = await LocationHelper.GetCurrentLocationAsync();
+            App.currentLocation = currentLocation;
             return currentLocation;
         }
 
@@ -222,7 +229,8 @@ namespace TripTrak_2016.Views
             double viewWidth = ApplicationView.GetForCurrentView().VisibleBounds.Width;
             var margin = new Thickness((viewWidth >= 500 ? 300 : 10), 10, 10, 10);
             bool isSuccessful = await this.InputMap.TrySetViewBoundsAsync(bounds, margin, MapAnimationKind.Default);
-            if (isSuccessful && positions.Count < 2) this.InputMap.ZoomLevel = 15;
+            if (isSuccessful && positions.Count < 2)
+                this.InputMap.ZoomLevel = 15;
             else if (!isSuccessful && positions.Count > 0)
             {
                 this.InputMap.Center = new Geopoint(positions[0]);
@@ -231,5 +239,78 @@ namespace TripTrak_2016.Views
         }
 
         #endregion
+
+        private async void RadioButton_Click(object sender, RoutedEventArgs e)
+        {
+            RadioButton radioButton = (RadioButton)sender;
+
+            string imagePath = "";
+            switch (radioButton.Content.ToString())
+            {
+                case "Arial":
+                    this.InputMap.Style = MapStyle.Aerial;
+                    MapOptionButton.Flyout.Hide();
+                    break;
+                case "Road":
+                    this.InputMap.Style = MapStyle.Road;
+                    MapOptionButton.Flyout.Hide();
+                    break;
+                case "Take Photo":
+                     imagePath = await PhotoHelper.GetPhotoFromCameraLaunch(true);
+                    if (imagePath !=null)
+                    {
+                        Dictionary<string, string> LocationInfo = new Dictionary<string, string>();
+
+                        LocationInfo.Add("ImagePath", imagePath);
+                        LocationInfo.Add("LocationName", this.ViewModel.PinDisplayInformation.Name);
+                        App.PageName = "Post to TripTrak";
+                        this.Frame.Navigate(typeof(PostPhoto), LocationInfo);
+                    }
+                    radioButton.IsChecked = false;
+                    CameraButton.Flyout.Hide();
+                    break;
+                case "Photo Library":
+                     imagePath = await PhotoHelper.GetPhotoFromCameraLaunch(false);
+                    if (imagePath != null)
+                    {
+                        Dictionary<string, string> LocationInfo = new Dictionary<string, string>();
+
+                        LocationInfo.Add("ImagePath", imagePath);
+                        LocationInfo.Add("LocationName", this.ViewModel.PinDisplayInformation.Name);
+                        App.PageName = "Post to TripTrak";
+                        this.Frame.Navigate(typeof(PostPhoto), LocationInfo);
+                    }
+                    radioButton.IsChecked = false;
+                    CameraButton.Flyout.Hide();
+                    break;
+                default:
+                    break;
+            }
+
+        }
+
+        private async void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Button button = (Button)sender;
+
+            switch (button.Tag.ToString())
+            {
+                case "CurrentLocation":
+                    button.IsEnabled = false;
+                    this.ViewModel.PinDisplayInformation = null;
+                    this.ViewModel.PinDisplayInformation = await this.GetCurrentLocationAsync();
+                    if (this.ViewModel.PinDisplayInformation != null)
+                    {
+                        // Resolve the address given the geocoordinates.
+                        await LocationHelper.TryUpdateMissingLocationInfoAsync(this.ViewModel.PinDisplayInformation, null);
+                        this.InputMap.Center = this.ViewModel.PinDisplayInformation.Geopoint;
+                        this.InputMap.ZoomLevel = 18;
+                    }
+                    (sender as Button).IsEnabled = true;
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }

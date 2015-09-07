@@ -10,6 +10,13 @@ namespace TripTrak_2016.ViewModels
 {
     public class HomeViewModel : BindableBase
     {
+        private bool isSimpleMap = false;
+        public bool IsSimpleMap
+        {
+            get { return this.isSimpleMap; }
+            set { this.SetProperty(ref this.isSimpleMap, value); }
+        }
+
         private LocationPin pinDisplayInformation = new LocationPin();
         public LocationPin PinDisplayInformation
         {
