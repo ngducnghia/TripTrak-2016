@@ -29,31 +29,37 @@ namespace TripTrak_2016.Views
     /// </summary>
     public sealed partial class PostPhoto : Page
     {
+        LocalDataStorage localData = new LocalDataStorage();
+        bool isRandomPhotoLocation = false;
         bool isOpenContactPicker = false;
         public IList<Contact> contacts;
-        private string imagePath = string.Empty;
+        private string imageName = string.Empty;
         private string locationName = string.Empty;
         public PostPhoto()
         {
             this.InitializeComponent();
             contactPickerTb.GotFocus += ContactPickerTb_GotFocus;
-            CameraButton.Click += CameraButton_Click;
+            PostButton.Click += PostButton_Click;
         }
 
-        private async void CameraButton_Click(object sender, RoutedEventArgs e)
+        private async void PostButton_Click(object sender, RoutedEventArgs e)
         {
+            var position = App.currentLocation.Position;
+            if (isRandomPhotoLocation)
+                position = LocationHelper.getRandomLocation(App.currentLocation.Position);
+
             var item = new LocationPin
             {
-                Position = App.currentLocation.Position,
+                Position = position,
                 Photo = new SharedPhoto
                 {
                     ShareWith = contactPickerTb.Text,
-                    ImageName = imagePath,
-                    description = DescriptionTb.Text,
+                    ImageName = imageName,
+                    Description = DescriptionTb.Text,
                 },
                 IsCheckPoint = true
             };
-            await LocalDataStorage.InsertLocationDataAsync(item);
+            await localData.InsertLocationDataAsync(item);
             App.isSimpleMap = false;
             this.Frame.GoBack();
         }
@@ -70,10 +76,10 @@ namespace TripTrak_2016.Views
             if (e.Parameter is Dictionary<string, string>)
             {
                 var dic = e.Parameter as Dictionary<string, string>;
-                imagePath = dic["ImagePath"];
+                imageName = dic["ImagePath"];
                 locationName = dic["LocationName"];
             }
-            StorageFile sourcePhoto = await KnownFolders.CameraRoll.GetFileAsync(imagePath);
+            StorageFile sourcePhoto = await KnownFolders.CameraRoll.GetFileAsync(imageName);
             IRandomAccessStream stream = await sourcePhoto.OpenAsync(FileAccessMode.Read);
 
             if (sourcePhoto != null)
@@ -83,7 +89,6 @@ namespace TripTrak_2016.Views
                 imageToPost.Source = imgSource;
             }
             LocationNameTbl.Text = locationName;
-
             base.OnNavigatedTo(e);
         }
 
@@ -93,7 +98,7 @@ namespace TripTrak_2016.Views
             contactPicker.CommitButtonText = "Select";
             contacts = await contactPicker.PickContactsAsync();
             contactPickerTb.Text = string.Empty;
-            if (contacts!=null && contacts.Count > 0)
+            if (contacts != null && contacts.Count > 0)
             {
                 foreach (Contact contact in contacts)
                 {

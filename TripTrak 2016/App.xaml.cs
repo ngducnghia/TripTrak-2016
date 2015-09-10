@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using TripTrak_2016.Helpers;
 using TripTrak_2016.Model;
+using TripTrak_2016.ViewModels;
 using TripTrak_2016.Views;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
@@ -26,7 +29,7 @@ namespace TripTrak_2016
     sealed partial class App : Application
     {
         public static LocationPin currentLocation = new LocationPin();
-        public static bool isSimpleMap = true;
+        public static bool isSimpleMap = false;
         public static string PageName = "TripTrak";
         private Frame _rootFrame;
         /// <summary>
@@ -38,7 +41,6 @@ namespace TripTrak_2016
             this.InitializeComponent();
             this.Suspending += OnSuspending;
         }
-
         /// <summary>
         /// Invoked when the application is launched normally by the end user.  Other entry points
         /// will be used such as when the application is launched to open a specific file.
@@ -46,7 +48,6 @@ namespace TripTrak_2016
         /// <param name="e">Details about the launch request and process.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
-
 #if DEBUG
             if (System.Diagnostics.Debugger.IsAttached)
             {

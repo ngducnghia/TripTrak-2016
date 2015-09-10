@@ -16,8 +16,6 @@ namespace TripTrak_2016.Helpers
 {
     public static class LocationHelper
     {
-        private static string routeFinderUnavailableMessage = "Unable to access map route finder service.";
-
         /// <summary>
         /// Gets the Geolocator singleton used by the LocationHelper.
         /// </summary>
@@ -35,6 +33,23 @@ namespace TripTrak_2016.Helpers
         {
             // TODO Replace the placeholder string below with your own Bing Maps key from https://www.bingmapsportal.com
             MapService.ServiceToken = "0KEyuXXhxVaOAIXwgvLA~doIeC1quhF2yDcbmlTYc6Q~AqLMibILNUu-ftoKwCf3whcS97LHNcNfVxjhwPQUQiMtbTSuQJHkbZeYm-z-05UY";
+        }
+
+
+        public static BasicGeoposition getRandomLocation(BasicGeoposition inputLocation)
+        {
+            int latitudeRange = 36000;
+            int longitudeRange = 53000;
+            var random = new Random();
+            Func<int, double, double> getCoordinate = (range, midpoint) =>
+                (random.Next(range) - (range / 2)) * 0.00001 + midpoint;
+
+            BasicGeoposition ret = new BasicGeoposition
+            {
+                Latitude = getCoordinate(latitudeRange, inputLocation.Latitude),
+                Longitude = getCoordinate(longitudeRange, inputLocation.Longitude)
+            };
+            return ret;
         }
 
         /// <summary>
@@ -142,15 +157,23 @@ namespace TripTrak_2016.Helpers
         public static async Task<bool> TryUpdateMissingLocationInfoAsync(LocationPin location, LocationPin currentLocation)
         {
             bool hasNoAddress = String.IsNullOrEmpty(location.Address);
-            if (hasNoAddress && location.Position.Latitude == 0 && location.Position.Longitude == 0) return true;
+            if (location.Photo == null)
+                location.Photo = new SharedPhoto();
+            if (!hasNoAddress)
+                return true;
+            else if (location.Position.Latitude == 0 && location.Position.Longitude == 0)
+            {
+                return false;
+            }
 
-            var results = hasNoAddress ?
-                await MapLocationFinder.FindLocationsAtAsync(location.Geopoint) :
-                await MapLocationFinder.FindLocationsAsync(location.Address, currentLocation.Geopoint);
+            var results = await MapLocationFinder.FindLocationsAtAsync(location.Geopoint);
+
 
             if (results.Status == MapLocationFinderStatus.Success && results.Locations.Count > 0)
             {
                 var result = results.Locations.First();
+
+                //This will re-allocate the Position to that particular address.
                 //   location.Position = result.Point.Position;
                 location.Address = result.Address.FormattedAddress;
                 if (String.IsNullOrEmpty(location.Name)) location.Name = result.Address.Town;

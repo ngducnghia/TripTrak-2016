@@ -15,6 +15,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Networking.Connectivity;
 using Windows.Storage;
+using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -36,13 +37,21 @@ namespace TripTrak_2016.Views
     /// </summary>
     public sealed partial class Home : Page
     {
+        LocalDataStorage localData = new LocalDataStorage();
         public HomeViewModel ViewModel { get; set; }
 
         public Home()
         {
             this.InitializeComponent();
             this.ViewModel = new HomeViewModel();
-            this.ViewModel.IsSimpleMap = App.isSimpleMap;
+            ImageGridView.SelectionChanged += ImageGridView_SelectionChanged;
+        }
+
+        private async void ImageGridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            LocationPin loc = (ImageGridView.SelectedItem) as LocationPin;
+            await LocationHelper.TryUpdateMissingLocationInfoAsync(loc, null);
+            this.ViewModel.PinDisplayInformation = loc;
         }
 
         /// <summary>
@@ -52,10 +61,17 @@ namespace TripTrak_2016.Views
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-
+            var pins = await localData.GetAllLocationPins();
+            foreach (LocationPin pin in pins)
+            {
+                this.ViewModel.PinnedLocations.Add(pin);
+                if (pin.IsCheckPoint)
+                    this.ViewModel.CheckedLocations.Add(pin);
+            }
+            drawPolylines();
             if (e.NavigationMode == NavigationMode.New)
             {
-                this.ViewModel.PinnedLocations = await LocalDataStorage.GetAllLocationPins();
+
             }
             // Start handling Geolocator and network status changes after loading the data 
             // so that the view doesn't get refreshed before there is something to show.
@@ -91,9 +107,11 @@ namespace TripTrak_2016.Views
                 {
                     var item = new LocationPin
                     {
-                        Position = args.Position.Coordinate.Point.Position
+                        Position = args.Position.Coordinate.Point.Position,
+                        Speed = args.Position.Coordinate.Speed
                     };
-                    await LocalDataStorage.InsertLocationDataAsync(item);
+                    this.ViewModel.PinnedLocations.Add(item);
+                    await localData.InsertLocationDataAsync(item);
                 }
             });
         }
@@ -193,18 +211,18 @@ namespace TripTrak_2016.Views
             if (isGeolocatorReady) currentLocation = await this.GetCurrentLocationAsync();
             if (currentLocation != null)
             {
-                if (this.ViewModel.PinnedLocations.Count > 0)
+                if (this.ViewModel.CheckedLocations.Count > 0)
                 {
-                    var currentLoc = this.ViewModel.PinnedLocations.FirstOrDefault(loc => loc.IsCurrentLocation == true);
+                    var currentLoc = this.ViewModel.CheckedLocations.FirstOrDefault(loc => loc.IsCurrentLocation == true);
                     if (currentLoc != null && currentLoc.IsCurrentLocation)
-                        this.ViewModel.PinnedLocations.Remove(currentLoc);
+                        this.ViewModel.CheckedLocations.Remove(currentLoc);
                 }
                 this.ViewModel.PinDisplayInformation = new LocationPin { Position = currentLocation.Position, IsCurrentLocation = true };
-                this.ViewModel.PinnedLocations.Add(this.ViewModel.PinDisplayInformation);
-                await LocationHelper.TryUpdateMissingLocationInfoAsync(this.ViewModel.PinnedLocations[this.ViewModel.PinnedLocations.Count - 1], null);
+                this.ViewModel.CheckedLocations.Add(this.ViewModel.PinDisplayInformation);
+                await LocationHelper.TryUpdateMissingLocationInfoAsync(this.ViewModel.CheckedLocations[this.ViewModel.CheckedLocations.Count - 1], null);
             }
             // Set the current view of the map control. 
-            var positions = this.ViewModel.PinnedLocations.Select(loc => loc.Position).ToList();
+            var positions = this.ViewModel.CheckedLocations.Select(loc => loc.Position).ToList();
             if (currentLocation != null) positions.Insert(0, currentLocation.Position);
             await setViewOnMap(positions);
         }
@@ -256,8 +274,8 @@ namespace TripTrak_2016.Views
                     MapOptionButton.Flyout.Hide();
                     break;
                 case "Take Photo":
-                     imagePath = await PhotoHelper.GetPhotoFromCameraLaunch(true);
-                    if (imagePath !=null)
+                    imagePath = await PhotoHelper.GetPhotoFromCameraLaunch(true);
+                    if (imagePath != null)
                     {
                         Dictionary<string, string> LocationInfo = new Dictionary<string, string>();
 
@@ -270,7 +288,7 @@ namespace TripTrak_2016.Views
                     CameraButton.Flyout.Hide();
                     break;
                 case "Photo Library":
-                     imagePath = await PhotoHelper.GetPhotoFromCameraLaunch(false);
+                    imagePath = await PhotoHelper.GetPhotoFromCameraLaunch(false);
                     if (imagePath != null)
                     {
                         Dictionary<string, string> LocationInfo = new Dictionary<string, string>();
@@ -311,6 +329,57 @@ namespace TripTrak_2016.Views
                 default:
                     break;
             }
+        }
+
+        private async void drawPolylines()
+        {
+            //remove all current polylines on map
+            this.InputMap.MapElements.Clear();
+
+            //Order points by DateCreated
+            var simpleGeoInDateOrder = this.ViewModel.PinnedLocations.OrderBy(x => x.DateCreated).ToList();
+
+            var Coords = new List<BasicGeoposition>();
+
+            //Query Points list to draw Polylines
+            for (int i = 0; i < simpleGeoInDateOrder.Count; i++)
+            {
+                if (Coords.Count == 0)
+                    Coords.Add(simpleGeoInDateOrder[i].Position);
+                else if (simpleGeoInDateOrder[i].DateCreated - simpleGeoInDateOrder[i - 1].DateCreated < TimeSpan.FromMinutes(2))
+                {
+                    Coords.Add(simpleGeoInDateOrder[i].Position);
+                }
+                else
+                {
+                    //define polyline
+                    MapPolyline mapPolyline = new MapPolyline();
+                    mapPolyline.StrokeColor = Colors.Black;
+                    mapPolyline.StrokeThickness = 2;
+                    mapPolyline.StrokeDashed = true;
+                    mapPolyline.Path = new Geopath(Coords);
+
+                    //draw polyline on map
+                    this.InputMap.MapElements.Add(mapPolyline);
+
+                    //Clear Coords.
+                    Coords.Clear();
+                }
+            }
+            //draw last Polyline on map
+            if (Coords.Count > 1)
+            {
+                MapPolyline lastPolyline = new MapPolyline();
+                lastPolyline.StrokeColor = Colors.Black;
+                lastPolyline.StrokeThickness = 2;
+                lastPolyline.StrokeDashed = true;
+                lastPolyline.Path = new Geopath(Coords);
+
+                //draw polyline on map
+                this.InputMap.MapElements.Add(lastPolyline);
+            }
+
+            await setViewOnMap(Coords);
         }
     }
 }

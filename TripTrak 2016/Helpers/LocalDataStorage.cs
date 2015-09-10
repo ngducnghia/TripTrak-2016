@@ -13,13 +13,13 @@ namespace TripTrak_2016.Helpers
 {
     class LocalDataStorage
     {
-        private const string dataFileName = "TripTrakData.txt";
+        private const string dataFileName = "TripTrakPins.txt";
 
 
         /// <summary>
         /// Load all saved LocationPin list from roaming storage. 
         /// </summary>
-        public static async Task<ObservableCollection<LocationPin>> GetAllLocationPins()
+        public async Task<ObservableCollection<LocationPin>> GetAllLocationPins()
         {
             ObservableCollection<LocationPin> data = null;
             try
@@ -50,7 +50,7 @@ namespace TripTrak_2016.Helpers
         /// Save the BasicGeoposition list to roaming storage. 
         /// </summary>
         /// <param name="locations">The BasicGeoposition list  to save.</param>
-        public static async Task InsertLocationDataAsync(LocationPin location)
+        public async Task InsertLocationDataAsync(LocationPin location)
         {
             StorageFile sampleFile = await ApplicationData.Current.RoamingFolder.CreateFileAsync(
                 dataFileName, CreationCollisionOption.OpenIfExists);

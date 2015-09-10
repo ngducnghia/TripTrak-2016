@@ -26,6 +26,17 @@ namespace TripTrak_2016.Model
             set { this.SetProperty(ref this.name, value); }
         }
 
+        private Double? speed;
+        /// <summary>
+        /// Gets or sets the name of the location.
+        /// </summary>
+        public Double? Speed
+        {
+            get { return this.speed; }
+            set { this.SetProperty(ref this.speed, value); }
+        }
+
+        
         private string address;
         /// <summary>
         /// Gets or sets the address of the location.
@@ -137,7 +148,7 @@ namespace TripTrak_2016.Model
         /// to reflect the different map icon used for the user's current location. 
         /// </summary>
         [IgnoreDataMember]
-        public Point NormalizedAnchorPoint => IsCurrentLocation ? pinpoint : pinpoint;
+        public Point NormalizedAnchorPoint => IsCurrentLocation ? pinpoint : centerpoint;
 
         private MapRoute fastestRoute;
         /// <summary>
@@ -206,7 +217,7 @@ namespace TripTrak_2016.Model
         /// </summary>
         [IgnoreDataMember]
         public string FormattedLatLon => 1 > 0 ?
-            $"{this.Position.Latitude}, {this.Position.Longitude}, {this.Position.Altitude}" : this.Name;
+            $"{String.Format("{0:0.######}", this.Position.Latitude)}, {String.Format("{0:0.######}", this.Position.Longitude)}, {String.Format("{0:0.######}", this.Position.Altitude)}" : this.Name;
 
         /// <summary>
         /// Gets a display-string representation of the current travel distance.
@@ -276,7 +287,7 @@ namespace TripTrak_2016.Model
     {
         public string ImageName { get; set; }
         public string ShareWith { get; set; }
-        public string description { get; set; }
+        public string Description { get; set; }
         [IgnoreDataMember]
         public BitmapImage ImageSource { get; set; }
     }
