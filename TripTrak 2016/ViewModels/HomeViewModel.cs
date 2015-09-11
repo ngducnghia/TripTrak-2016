@@ -34,8 +34,7 @@ namespace TripTrak_2016.ViewModels
 
         private ObservableCollection<LocationPin> checkedLocations = new ObservableCollection<LocationPin>();
         /// <summary>
-        /// Gets or sets the locations represented on the map; this is a superset of Locations, and 
-        /// includes the current location and any locations being added but not yet saved. 
+        /// This is Locations where users Check-in or take photo
         /// </summary>
         public ObservableCollection<LocationPin> CheckedLocations
         {
@@ -46,6 +45,23 @@ namespace TripTrak_2016.ViewModels
             set
             {
                 this.SetProperty(ref this.checkedLocations, value);
+            }
+        }
+
+
+        private ObservableCollection<LocationPin> mileStoneLocations = new ObservableCollection<LocationPin>();
+        /// <summary>
+        /// This is Locations where users stop for a while or checked in.
+        /// </summary>
+        public ObservableCollection<LocationPin> MileStoneLocations
+        {
+            get
+            {
+                return this.mileStoneLocations;
+            }
+            set
+            {
+                this.SetProperty(ref this.mileStoneLocations, value);
             }
         }
     }

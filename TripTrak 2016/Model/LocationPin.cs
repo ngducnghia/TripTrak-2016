@@ -36,7 +36,7 @@ namespace TripTrak_2016.Model
             set { this.SetProperty(ref this.speed, value); }
         }
 
-        
+
         private string address;
         /// <summary>
         /// Gets or sets the address of the location.
@@ -95,16 +95,20 @@ namespace TripTrak_2016.Model
         {
             get
             {
-                if (IsCurrentLocation)
-                    return DateTimeOffset.Now;
-                else
-                    return this.dateCreated;
+                return this.dateCreated;
             }
             set
             {
                 this.SetProperty(ref this.dateCreated, value);
             }
         }
+
+        /// <summary>
+        /// Gets a display-string representation of the DateCreated time. 
+        /// </summary>
+        public string FormattedDateCreatedTime =>
+            new TimeSpan(this.DateCreated.Hour, this.DateCreated.Minute, 0).ToString("hh\\:mm");
+
 
         /// <summary>
         /// Gets a Geopoint representation of the current location for use with the map service APIs.
@@ -217,7 +221,7 @@ namespace TripTrak_2016.Model
         /// </summary>
         [IgnoreDataMember]
         public string FormattedLatLon => 1 > 0 ?
-            $"{String.Format("{0:0.######}", this.Position.Latitude)}, {String.Format("{0:0.######}", this.Position.Longitude)}, {String.Format("{0:0.######}", this.Position.Altitude)}" : this.Name;
+            $"{String.Format("{0:0.#######}", this.Position.Latitude)}, {String.Format("{0:0.#######}", this.Position.Longitude)}, {String.Format("{0:0.#######}", this.Position.Altitude)}" : this.Name;
 
         /// <summary>
         /// Gets a display-string representation of the current travel distance.

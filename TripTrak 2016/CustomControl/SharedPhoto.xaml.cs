@@ -35,10 +35,12 @@ namespace TripTrak_2016.CustomControl
                 return;
             try
             {
+                mainGrid.Visibility = Visibility.Visible;
                 StorageFile sourcePhoto = await KnownFolders.CameraRoll.GetFileAsync(PhotoNameTb.Text);
                 if (sourcePhoto != null)
                 {
                     var fileStream = await sourcePhoto.GetThumbnailAsync(ThumbnailMode.PicturesView);
+                    sourcePhoto = null;
                     var img = new BitmapImage();
                     img.SetSource(fileStream);
                     PhotoImg.Source = img;

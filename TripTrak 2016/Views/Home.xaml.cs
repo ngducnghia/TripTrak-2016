@@ -38,6 +38,7 @@ namespace TripTrak_2016.Views
     public sealed partial class Home : Page
     {
         LocalDataStorage localData = new LocalDataStorage();
+        private ObservableCollection<LocationPin> allPins = null;
         public HomeViewModel ViewModel { get; set; }
 
         public Home()
@@ -45,6 +46,76 @@ namespace TripTrak_2016.Views
             this.InitializeComponent();
             this.ViewModel = new HomeViewModel();
             ImageGridView.SelectionChanged += ImageGridView_SelectionChanged;
+            HistoryDatePicker.DateChanged += HistoryDatePicker_DateChanged;
+            PrevDayButton.Click += PrevDayButton_Click;
+            NextDayButton.Click += NextDayButton_Click;
+            CheckPointSlider.ValueChanged += CheckPointSlider_ValueChanged;
+        }
+
+        private async void CheckPointSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            var index = Convert.ToInt32(CheckPointSlider.Value);
+
+            if (this.ViewModel.CheckedLocations.Count > 0)
+            {
+                var currentLoc = this.ViewModel.CheckedLocations.FirstOrDefault(loc => loc.IsCurrentLocation == true);
+                if (currentLoc != null && currentLoc.IsCurrentLocation)
+                    this.ViewModel.CheckedLocations.Remove(currentLoc);
+            }
+            this.ViewModel.PinDisplayInformation = new LocationPin
+            {
+                Position = this.ViewModel.MileStoneLocations[index].Position,
+                IsCurrentLocation = true,
+                DateCreated = this.ViewModel.MileStoneLocations[index].DateCreated
+            };
+            this.ViewModel.CheckedLocations.Add(this.ViewModel.PinDisplayInformation);
+            this.InputMap.Center = this.ViewModel.PinDisplayInformation.Geopoint;
+            await LocationHelper.TryUpdateMissingLocationInfoAsync(this.ViewModel.CheckedLocations[this.ViewModel.CheckedLocations.Count - 1], null);
+        }
+
+        private void NextDayButton_Click(object sender, RoutedEventArgs e)
+        {
+            HistoryDatePicker.Date = HistoryDatePicker.Date.AddDays(1);
+        }
+
+        private void PrevDayButton_Click(object sender, RoutedEventArgs e)
+        {
+            HistoryDatePicker.Date = HistoryDatePicker.Date.AddDays(-1);
+        }
+
+        private async void HistoryDatePicker_DateChanged(object sender, DatePickerValueChangedEventArgs e)
+        {
+            DatePickerSp.IsHitTestVisible = false;
+            DatePickerSp.Opacity = 0.5;
+
+            var hasData = await GetPinsForGivenDate();
+
+            DatePickerSp.IsHitTestVisible = true;
+            DatePickerSp.Opacity = 1;
+        }
+
+        private async Task<bool> GetPinsForGivenDate()
+        {
+            bool ret = false;
+            this.ViewModel.PinnedLocations.Clear();
+            this.ViewModel.CheckedLocations.Clear();
+            this.ViewModel.MileStoneLocations.Clear();
+            foreach (LocationPin pin in allPins)
+            {
+                if (pin.DateCreated.Date == HistoryDatePicker.Date.Date)
+                {
+                    this.ViewModel.PinnedLocations.Add(pin);
+                    if (pin.IsCheckPoint)
+                    { 
+                        this.ViewModel.CheckedLocations.Add(pin);
+                    }
+                }
+            }
+            var numberOfPolylines = await drawPolylines();
+            if (this.ViewModel.PinnedLocations.Count > 0)
+                ret = !ret;
+            CheckPointSlider.Maximum = this.ViewModel.MileStoneLocations.Count()-1;
+            return ret;
         }
 
         private async void ImageGridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -61,14 +132,8 @@ namespace TripTrak_2016.Views
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            var pins = await localData.GetAllLocationPins();
-            foreach (LocationPin pin in pins)
-            {
-                this.ViewModel.PinnedLocations.Add(pin);
-                if (pin.IsCheckPoint)
-                    this.ViewModel.CheckedLocations.Add(pin);
-            }
-            drawPolylines();
+            allPins = await localData.GetAllLocationPins();
+            GetPinsForGivenDate();
             if (e.NavigationMode == NavigationMode.New)
             {
 
@@ -331,8 +396,9 @@ namespace TripTrak_2016.Views
             }
         }
 
-        private async void drawPolylines()
+        private async Task<int> drawPolylines()
         {
+            int ret = 0;
             //remove all current polylines on map
             this.InputMap.MapElements.Clear();
 
@@ -344,9 +410,11 @@ namespace TripTrak_2016.Views
             //Query Points list to draw Polylines
             for (int i = 0; i < simpleGeoInDateOrder.Count; i++)
             {
+                if(simpleGeoInDateOrder[i].IsCheckPoint == true)
+                    this.ViewModel.MileStoneLocations.Add(simpleGeoInDateOrder[i]);
                 if (Coords.Count == 0)
                     Coords.Add(simpleGeoInDateOrder[i].Position);
-                else if (simpleGeoInDateOrder[i].DateCreated - simpleGeoInDateOrder[i - 1].DateCreated < TimeSpan.FromMinutes(2))
+                else if (simpleGeoInDateOrder[i].DateCreated - simpleGeoInDateOrder[i - 1].DateCreated < TimeSpan.FromMinutes(5))
                 {
                     Coords.Add(simpleGeoInDateOrder[i].Position);
                 }
@@ -361,9 +429,11 @@ namespace TripTrak_2016.Views
 
                     //draw polyline on map
                     this.InputMap.MapElements.Add(mapPolyline);
-
+                    ret++;
                     //Clear Coords.
                     Coords.Clear();
+                    if (simpleGeoInDateOrder[i].IsCheckPoint == false)
+                        this.ViewModel.MileStoneLocations.Add(simpleGeoInDateOrder[i]);
                 }
             }
             //draw last Polyline on map
@@ -377,9 +447,12 @@ namespace TripTrak_2016.Views
 
                 //draw polyline on map
                 this.InputMap.MapElements.Add(lastPolyline);
+                ret++;
             }
 
             await setViewOnMap(Coords);
+
+            return ret;
         }
     }
 }
