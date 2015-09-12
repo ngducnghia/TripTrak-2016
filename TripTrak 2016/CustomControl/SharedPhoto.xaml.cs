@@ -35,7 +35,6 @@ namespace TripTrak_2016.CustomControl
                 return;
             try
             {
-                mainGrid.Visibility = Visibility.Visible;
                 StorageFile sourcePhoto = await KnownFolders.CameraRoll.GetFileAsync(PhotoNameTb.Text);
                 if (sourcePhoto != null)
                 {

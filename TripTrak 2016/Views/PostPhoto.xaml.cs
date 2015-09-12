@@ -33,7 +33,7 @@ namespace TripTrak_2016.Views
         bool isRandomPhotoLocation = false;
         bool isOpenContactPicker = false;
         public IList<Contact> contacts;
-        private string imageName = string.Empty;
+        public string imageName = string.Empty;
         private string locationName = string.Empty;
         public PostPhoto()
         {

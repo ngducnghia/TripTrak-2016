@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid x:Name="mainGrid" Width="100" Height="Auto" Visibility="Collapsed">
+    <Grid x:Name="mainGrid" Width="100">
         <TextBlock x:Name="PhotoNameTb" Text="{Binding ImageName}" Visibility="Collapsed"/>
         <Image x:Name="PhotoImg" Stretch="UniformToFill"/>
     </Grid>

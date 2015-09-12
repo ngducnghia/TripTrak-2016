@@ -32,7 +32,7 @@
         </DataTemplate>
 
         <DataTemplate x:Key="ImageOverlayGalleryFolderDataTemplate">
-            <photoControl:SharedPhoto DataContext="{Binding Photo}"/>
+            <photoControl:SharedPhoto  DoubleTapped="SharedPhoto_DoubleTapped" DataContext="{Binding Photo}"/>
         </DataTemplate>
     </Page.Resources>
 
@@ -181,6 +181,13 @@
             </Button>
         </StackPanel>
 
-
+        <Grid x:Name="EnlargeImageGrid" Grid.ColumnSpan="3" Grid.RowSpan="3" Background="Gray" Visibility="Collapsed">
+            <Button x:Name="quitEnlargeButton" Click="quitEnlargeButton_Click"
+                    Content="&#xE0A6;" HorizontalAlignment="Left" VerticalAlignment="Top"
+                    Style="{StaticResource RoundButton}" Foreground="White" Background="CornflowerBlue"
+                    FontFamily="Segoe MDL2 Assets" FontSize="28" Margin="10"/>
+                <Image x:Name="EnlargeImage" />
+        </Grid>
+    
     </Grid>
 </Page>

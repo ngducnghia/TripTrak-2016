@@ -15,6 +15,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Networking.Connectivity;
 using Windows.Storage;
+using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
@@ -453,6 +454,38 @@ namespace TripTrak_2016.Views
             await setViewOnMap(Coords);
 
             return ret;
+        }
+
+        private async void SharedPhoto_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            SharedPhoto tappedPhoto = ((TripTrak_2016.CustomControl.SharedPhoto)sender).DataContext as SharedPhoto;
+
+            if (!string.IsNullOrEmpty(tappedPhoto.ImageName))
+            {
+                try
+                {
+                    StorageFile sourcePhoto = await KnownFolders.CameraRoll.GetFileAsync(tappedPhoto.ImageName);
+                    IRandomAccessStream stream = await sourcePhoto.OpenAsync(FileAccessMode.Read);
+
+                    if (sourcePhoto != null)
+                    {
+                        var imgSource = new BitmapImage();
+                        imgSource.SetSource(stream);
+                        EnlargeImage.Source = imgSource;
+                        EnlargeImageGrid.Visibility = Visibility.Visible;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //
+                }
+            }
+        }
+
+        private void quitEnlargeButton_Click(object sender, RoutedEventArgs e)
+        {
+            EnlargeImage.Source = null;
+            EnlargeImageGrid.Visibility = Visibility.Collapsed;
         }
     }
 }
