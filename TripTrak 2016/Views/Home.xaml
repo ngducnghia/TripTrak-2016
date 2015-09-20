@@ -59,7 +59,6 @@
                          WatermarkMode="On" 
                          ZoomInteractionMode="GestureAndControl"
                          TrafficFlowVisible="True"
-                         Style="Road"
             MapServiceToken="0KEyuXXhxVaOAIXwgvLA~doIeC1quhF2yDcbmlTYc6Q~AqLMibILNUu-ftoKwCf3whcS97LHNcNfVxjhwPQUQiMtbTSuQJHkbZeYm-z-05UY">
 
                 <maps:MapItemsControl  ItemsSource="{x:Bind ViewModel.CheckedLocations}" ItemTemplate="{StaticResource InputMapItemTemplate}"/>

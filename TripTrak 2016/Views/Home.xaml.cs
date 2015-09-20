@@ -55,23 +55,26 @@ namespace TripTrak_2016.Views
 
         private async void CheckPointSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            var index = Convert.ToInt32(CheckPointSlider.Value);
+            if (this.ViewModel.MileStoneLocations.Count > 0)
+            {
+                var index = Convert.ToInt32(CheckPointSlider.Value);
 
-            if (this.ViewModel.CheckedLocations.Count > 0)
-            {
-                var currentLoc = this.ViewModel.CheckedLocations.FirstOrDefault(loc => loc.IsCurrentLocation == true);
-                if (currentLoc != null && currentLoc.IsCurrentLocation)
-                    this.ViewModel.CheckedLocations.Remove(currentLoc);
+                if (this.ViewModel.CheckedLocations.Count > 0)
+                {
+                    var currentLoc = this.ViewModel.CheckedLocations.FirstOrDefault(loc => loc.IsCurrentLocation == true);
+                    if (currentLoc != null && currentLoc.IsCurrentLocation)
+                        this.ViewModel.CheckedLocations.Remove(currentLoc);
+                }
+                this.ViewModel.PinDisplayInformation = new LocationPin
+                {
+                    Position = this.ViewModel.MileStoneLocations[index].Position,
+                    IsCurrentLocation = true,
+                    DateCreated = this.ViewModel.MileStoneLocations[index].DateCreated
+                };
+                this.ViewModel.CheckedLocations.Add(this.ViewModel.PinDisplayInformation);
+                this.InputMap.Center = this.ViewModel.PinDisplayInformation.Geopoint;
+                await LocationHelper.TryUpdateMissingLocationInfoAsync(this.ViewModel.CheckedLocations[this.ViewModel.CheckedLocations.Count - 1], null);
             }
-            this.ViewModel.PinDisplayInformation = new LocationPin
-            {
-                Position = this.ViewModel.MileStoneLocations[index].Position,
-                IsCurrentLocation = true,
-                DateCreated = this.ViewModel.MileStoneLocations[index].DateCreated
-            };
-            this.ViewModel.CheckedLocations.Add(this.ViewModel.PinDisplayInformation);
-            this.InputMap.Center = this.ViewModel.PinDisplayInformation.Geopoint;
-            await LocationHelper.TryUpdateMissingLocationInfoAsync(this.ViewModel.CheckedLocations[this.ViewModel.CheckedLocations.Count - 1], null);
         }
 
         private void NextDayButton_Click(object sender, RoutedEventArgs e)
@@ -101,29 +104,45 @@ namespace TripTrak_2016.Views
             this.ViewModel.PinnedLocations.Clear();
             this.ViewModel.CheckedLocations.Clear();
             this.ViewModel.MileStoneLocations.Clear();
-            foreach (LocationPin pin in allPins)
+            CheckPointSlider.Maximum = 0;
+            this.ViewModel.PinDisplayInformation = new LocationPin();
+            CheckPointSlider.Value = 0;
+            this.InputMap.MapElements.Clear();
+            allPins = await localData.GetLocationPinsByDate(HistoryDatePicker.Date.Date);
+            if (allPins != null && allPins.Count > 0)
             {
-                if (pin.DateCreated.Date == HistoryDatePicker.Date.Date)
+                foreach (LocationPin pin in allPins)
                 {
-                    this.ViewModel.PinnedLocations.Add(pin);
-                    if (pin.IsCheckPoint)
-                    { 
-                        this.ViewModel.CheckedLocations.Add(pin);
+                    if (pin.DateCreated.Date == HistoryDatePicker.Date.Date)
+                    {
+                        this.ViewModel.PinnedLocations.Add(pin);
+                        if (pin.IsCheckPoint)
+                        {
+                            this.ViewModel.CheckedLocations.Add(pin);
+                        }
                     }
                 }
+                var numberOfPolylines = await drawPolylines();
+                if (this.ViewModel.PinnedLocations.Count > 0)
+                    ret = !ret;
+                CheckPointSlider.Maximum = this.ViewModel.MileStoneLocations.Count() - 1;
             }
-            var numberOfPolylines = await drawPolylines();
-            if (this.ViewModel.PinnedLocations.Count > 0)
-                ret = !ret;
-            CheckPointSlider.Maximum = this.ViewModel.MileStoneLocations.Count()-1;
             return ret;
         }
 
         private async void ImageGridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            LocationPin loc = (ImageGridView.SelectedItem) as LocationPin;
-            await LocationHelper.TryUpdateMissingLocationInfoAsync(loc, null);
-            this.ViewModel.PinDisplayInformation = loc;
+            try
+            {
+                LocationPin loc = (ImageGridView.SelectedItem) as LocationPin;
+                await LocationHelper.TryUpdateMissingLocationInfoAsync(loc, null);
+                this.ViewModel.PinDisplayInformation = loc;
+                this.InputMap.Center = this.ViewModel.PinDisplayInformation.Geopoint;
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
         /// <summary>
@@ -133,8 +152,8 @@ namespace TripTrak_2016.Views
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            allPins = await localData.GetAllLocationPins();
-            GetPinsForGivenDate();
+
+            bool getPins = await GetPinsForGivenDate();
             if (e.NavigationMode == NavigationMode.New)
             {
 
@@ -284,12 +303,13 @@ namespace TripTrak_2016.Views
                         this.ViewModel.CheckedLocations.Remove(currentLoc);
                 }
                 this.ViewModel.PinDisplayInformation = new LocationPin { Position = currentLocation.Position, IsCurrentLocation = true };
-                this.ViewModel.CheckedLocations.Add(this.ViewModel.PinDisplayInformation);
-                await LocationHelper.TryUpdateMissingLocationInfoAsync(this.ViewModel.CheckedLocations[this.ViewModel.CheckedLocations.Count - 1], null);
+                this.ViewModel.CheckedLocations.Add(new LocationPin { Position = currentLocation.Position, IsCurrentLocation = true });
+                await LocationHelper.TryUpdateMissingLocationInfoAsync(this.ViewModel.PinDisplayInformation, null);
             }
             // Set the current view of the map control. 
             var positions = this.ViewModel.CheckedLocations.Select(loc => loc.Position).ToList();
-            if (currentLocation != null) positions.Insert(0, currentLocation.Position);
+            //if (currentLocation != null)
+            //    positions.Insert(0, currentLocation.Position);
             await setViewOnMap(positions);
         }
 
@@ -340,6 +360,8 @@ namespace TripTrak_2016.Views
                     MapOptionButton.Flyout.Hide();
                     break;
                 case "Take Photo":
+                    HistoryDatePicker.Date = DateTime.Now.Date;
+                    await this.ResetViewAsync();
                     imagePath = await PhotoHelper.GetPhotoFromCameraLaunch(true);
                     if (imagePath != null)
                     {
@@ -381,16 +403,10 @@ namespace TripTrak_2016.Views
             {
                 case "CurrentLocation":
                     button.IsEnabled = false;
-                    this.ViewModel.PinDisplayInformation = null;
-                    this.ViewModel.PinDisplayInformation = await this.GetCurrentLocationAsync();
-                    if (this.ViewModel.PinDisplayInformation != null)
-                    {
-                        // Resolve the address given the geocoordinates.
-                        await LocationHelper.TryUpdateMissingLocationInfoAsync(this.ViewModel.PinDisplayInformation, null);
-                        this.InputMap.Center = this.ViewModel.PinDisplayInformation.Geopoint;
-                        this.InputMap.ZoomLevel = 18;
-                    }
-                    (sender as Button).IsEnabled = true;
+                    if (HistoryDatePicker.Date.Date != DateTime.Now.Date.Date)
+                        HistoryDatePicker.Date = DateTime.Now.Date;
+                    await this.ResetViewAsync();
+                    button.IsEnabled = true;
                     break;
                 default:
                     break;
@@ -411,7 +427,7 @@ namespace TripTrak_2016.Views
             //Query Points list to draw Polylines
             for (int i = 0; i < simpleGeoInDateOrder.Count; i++)
             {
-                if(simpleGeoInDateOrder[i].IsCheckPoint == true)
+                if (simpleGeoInDateOrder[i].IsCheckPoint == true)
                     this.ViewModel.MileStoneLocations.Add(simpleGeoInDateOrder[i]);
                 if (Coords.Count == 0)
                     Coords.Add(simpleGeoInDateOrder[i].Position);

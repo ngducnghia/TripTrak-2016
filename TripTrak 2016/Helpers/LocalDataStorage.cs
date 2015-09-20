@@ -13,18 +13,24 @@ namespace TripTrak_2016.Helpers
 {
     class LocalDataStorage
     {
-        private const string dataFileName = "TripTrakPins.txt";
+        private const string dataFileName = "TripTrakPins";
+
+        public static string GenerateFileName(string context, DateTime date)
+        {
+            return context + "_" + date.ToString("yyyyMMdd") + ".txt";
+        }
 
 
         /// <summary>
         /// Load all saved LocationPin list from roaming storage. 
         /// </summary>
-        public async Task<ObservableCollection<LocationPin>> GetAllLocationPins()
+        public async Task<ObservableCollection<LocationPin>> GetLocationPinsByDate(DateTime date)
         {
-            ObservableCollection<LocationPin> data = null;
+            ObservableCollection<LocationPin> data = new ObservableCollection<LocationPin>();
             try
             {
-                StorageFile dataFile = await ApplicationData.Current.RoamingFolder.GetFileAsync(dataFileName);
+                string fileName = GenerateFileName(dataFileName, date);
+                StorageFile dataFile = await ApplicationData.Current.RoamingFolder.GetFileAsync(fileName);
                 string text = await FileIO.ReadTextAsync(dataFile);
                 if (text.Length > 0)
                 {
@@ -41,9 +47,9 @@ namespace TripTrak_2016.Helpers
             }
             catch (FileNotFoundException)
             {
-                // Do nothing.
+                return null;
             }
-            return data ?? new ObservableCollection<LocationPin>();
+            return data;
         }
 
         /// <summary>
@@ -52,8 +58,9 @@ namespace TripTrak_2016.Helpers
         /// <param name="locations">The BasicGeoposition list  to save.</param>
         public async Task InsertLocationDataAsync(LocationPin location)
         {
+            string fileName = GenerateFileName(dataFileName, DateTime.Now);
             StorageFile sampleFile = await ApplicationData.Current.RoamingFolder.CreateFileAsync(
-                dataFileName, CreationCollisionOption.OpenIfExists);
+                fileName, CreationCollisionOption.OpenIfExists);
             using (MemoryStream stream = new MemoryStream())
             {
                 var serializer = new DataContractJsonSerializer(typeof(LocationPin));

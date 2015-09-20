@@ -32,7 +32,10 @@ namespace TripTrak_2016.CustomControl
         public async void getImageSource()
         {
             if (string.IsNullOrEmpty(PhotoNameTb.Text))
+            {
+                PhotoImg.Source = null;
                 return;
+            }
             try
             {
                 StorageFile sourcePhoto = await KnownFolders.CameraRoll.GetFileAsync(PhotoNameTb.Text);
