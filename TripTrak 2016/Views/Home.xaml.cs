@@ -53,26 +53,58 @@ namespace TripTrak_2016.Views
             CheckPointSlider.ValueChanged += CheckPointSlider_ValueChanged;
         }
 
+        private async void ImageGridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                //get selected ImageGrid item and convert to LocationPin
+                LocationPin loc = (ImageGridView.SelectedItem) as LocationPin;
+                await LocationHelper.TryUpdateMissingLocationInfoAsync(loc, null);
+                this.ViewModel.PinDisplayInformation = loc;
+
+                //move the slider along
+                CheckPointSlider.Value = this.ViewModel.MileStoneLocations.IndexOf(loc);
+
+                //center the selected Photo
+                this.InputMap.Center = this.ViewModel.PinDisplayInformation.Geopoint;
+
+                ImageGridView.ScrollIntoView(loc, ScrollIntoViewAlignment.Leading);
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
         private async void CheckPointSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            if (this.ViewModel.MileStoneLocations.Count > 0)
+            if (this.ViewModel.MileStoneLocations.Count > 0) //check > 0 to avoid out of index error
             {
                 var index = Convert.ToInt32(CheckPointSlider.Value);
-
+                //remove the current pinned point on map
                 if (this.ViewModel.CheckedLocations.Count > 0)
                 {
                     var currentLoc = this.ViewModel.CheckedLocations.FirstOrDefault(loc => loc.IsCurrentLocation == true);
                     if (currentLoc != null && currentLoc.IsCurrentLocation)
                         this.ViewModel.CheckedLocations.Remove(currentLoc);
                 }
+                //add the new pinpoint on map
                 this.ViewModel.PinDisplayInformation = new LocationPin
                 {
                     Position = this.ViewModel.MileStoneLocations[index].Position,
                     IsCurrentLocation = true,
                     DateCreated = this.ViewModel.MileStoneLocations[index].DateCreated
                 };
+
+                //add to List Pins
                 this.ViewModel.CheckedLocations.Add(this.ViewModel.PinDisplayInformation);
+
+                //move the Photo list along
+                ImageGridView.SelectedIndex = this.ViewModel.CheckedLocations.IndexOf(this.ViewModel.MileStoneLocations[index]);
+              
+                //center the map to selected Pin
                 this.InputMap.Center = this.ViewModel.PinDisplayInformation.Geopoint;
+
+                //update location info (address) of the selected Pin
                 await LocationHelper.TryUpdateMissingLocationInfoAsync(this.ViewModel.CheckedLocations[this.ViewModel.CheckedLocations.Count - 1], null);
             }
         }
@@ -130,20 +162,7 @@ namespace TripTrak_2016.Views
             return ret;
         }
 
-        private async void ImageGridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            try
-            {
-                LocationPin loc = (ImageGridView.SelectedItem) as LocationPin;
-                await LocationHelper.TryUpdateMissingLocationInfoAsync(loc, null);
-                this.ViewModel.PinDisplayInformation = loc;
-                this.InputMap.Center = this.ViewModel.PinDisplayInformation.Geopoint;
-            }
-            catch (Exception ex)
-            {
 
-            }
-        }
 
         /// <summary>
         /// Loads the saved location data on first navigation, and 

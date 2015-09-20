@@ -84,7 +84,7 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                         <ContentPresenter x:Name="ContentPresenter" AutomationProperties.AccessibilityView="Raw" 
-                                              CornerRadius="33" BorderThickness="2"
+                                              CornerRadius="33" BorderThickness="0"
                                               BorderBrush="Black"  Background="{TemplateBinding Background}"
                                               ContentTemplate="{TemplateBinding ContentTemplate}" 
                                               ContentTransitions="{TemplateBinding ContentTransitions}" Content="{TemplateBinding Content}" 
