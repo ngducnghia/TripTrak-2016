@@ -59,14 +59,9 @@ namespace TripTrak_2016.Views
             {
                 //get selected ImageGrid item and convert to LocationPin
                 LocationPin loc = (ImageGridView.SelectedItem) as LocationPin;
-                await LocationHelper.TryUpdateMissingLocationInfoAsync(loc, null);
-                this.ViewModel.PinDisplayInformation = loc;
 
                 //move the slider along
                 CheckPointSlider.Value = this.ViewModel.MileStoneLocations.IndexOf(loc);
-
-                //center the selected Photo
-                this.InputMap.Center = this.ViewModel.PinDisplayInformation.Geopoint;
 
                 ImageGridView.ScrollIntoView(loc, ScrollIntoViewAlignment.Leading);
             }
@@ -80,32 +75,21 @@ namespace TripTrak_2016.Views
             if (this.ViewModel.MileStoneLocations.Count > 0) //check > 0 to avoid out of index error
             {
                 var index = Convert.ToInt32(CheckPointSlider.Value);
-                //remove the current pinned point on map
-                if (this.ViewModel.CheckedLocations.Count > 0)
-                {
-                    var currentLoc = this.ViewModel.CheckedLocations.FirstOrDefault(loc => loc.IsCurrentLocation == true);
-                    if (currentLoc != null && currentLoc.IsCurrentLocation)
-                        this.ViewModel.CheckedLocations.Remove(currentLoc);
-                }
-                //add the new pinpoint on map
-                this.ViewModel.PinDisplayInformation = new LocationPin
-                {
-                    Position = this.ViewModel.MileStoneLocations[index].Position,
-                    IsCurrentLocation = true,
-                    DateCreated = this.ViewModel.MileStoneLocations[index].DateCreated
-                };
 
-                //add to List Pins
-                this.ViewModel.CheckedLocations.Add(this.ViewModel.PinDisplayInformation);
+                //add the new pinpoint on map
+                this.ViewModel.PinDisplayInformation = this.ViewModel.MileStoneLocations[index];
 
                 //move the Photo list along
-                ImageGridView.SelectedIndex = this.ViewModel.CheckedLocations.IndexOf(this.ViewModel.MileStoneLocations[index]);
-              
+                int selectedIndex = this.ViewModel.CheckedLocations.IndexOf(this.ViewModel.MileStoneLocations[index]);
+                if (selectedIndex >= 0)
+                    ImageGridView.SelectedIndex = selectedIndex;
+
                 //center the map to selected Pin
                 this.InputMap.Center = this.ViewModel.PinDisplayInformation.Geopoint;
 
                 //update location info (address) of the selected Pin
-                await LocationHelper.TryUpdateMissingLocationInfoAsync(this.ViewModel.CheckedLocations[this.ViewModel.CheckedLocations.Count - 1], null);
+                await LocationHelper.TryUpdateMissingLocationInfoAsync(this.ViewModel.PinDisplayInformation, null);
+                await drawPolylines(this.ViewModel.PinDisplayInformation, false);
             }
         }
 
@@ -154,7 +138,7 @@ namespace TripTrak_2016.Views
                         }
                     }
                 }
-                var numberOfPolylines = await drawPolylines();
+                var numberOfPolylines = await drawPolylines(this.ViewModel.PinDisplayInformation, true);
                 if (this.ViewModel.PinnedLocations.Count > 0)
                     ret = !ret;
                 CheckPointSlider.Maximum = this.ViewModel.MileStoneLocations.Count() - 1;
@@ -214,7 +198,8 @@ namespace TripTrak_2016.Views
                         Position = args.Position.Coordinate.Point.Position,
                         Speed = args.Position.Coordinate.Speed
                     };
-                    this.ViewModel.PinnedLocations.Add(item);
+                    if (DateTime.Now.Date == HistoryDatePicker.Date.Date)
+                        this.ViewModel.PinnedLocations.Add(item);
                     await localData.InsertLocationDataAsync(item);
                 }
             });
@@ -432,7 +417,7 @@ namespace TripTrak_2016.Views
             }
         }
 
-        private async Task<int> drawPolylines()
+        private async Task<int> drawPolylines(LocationPin breakColorPin, bool isAddMilestone)
         {
             int ret = 0;
             //remove all current polylines on map
@@ -440,26 +425,23 @@ namespace TripTrak_2016.Views
 
             //Order points by DateCreated
             var simpleGeoInDateOrder = this.ViewModel.PinnedLocations.OrderBy(x => x.DateCreated).ToList();
-
+            var color = Colors.Blue;
+            double thickness = 3;
             var Coords = new List<BasicGeoposition>();
-
+            bool breakColor = false;
             //Query Points list to draw Polylines
             for (int i = 0; i < simpleGeoInDateOrder.Count; i++)
             {
-                if (simpleGeoInDateOrder[i].IsCheckPoint == true)
+                if (simpleGeoInDateOrder[i].IsCheckPoint == true && isAddMilestone)
                     this.ViewModel.MileStoneLocations.Add(simpleGeoInDateOrder[i]);
                 if (Coords.Count == 0)
                     Coords.Add(simpleGeoInDateOrder[i].Position);
-                else if (simpleGeoInDateOrder[i].DateCreated - simpleGeoInDateOrder[i - 1].DateCreated < TimeSpan.FromMinutes(5))
-                {
-                    Coords.Add(simpleGeoInDateOrder[i].Position);
-                }
-                else
+                else if (!breakColor && simpleGeoInDateOrder[i].DateCreated > breakColorPin.DateCreated)
                 {
                     //define polyline
                     MapPolyline mapPolyline = new MapPolyline();
-                    mapPolyline.StrokeColor = Colors.Black;
-                    mapPolyline.StrokeThickness = 2;
+                    mapPolyline.StrokeColor = color;
+                    mapPolyline.StrokeThickness = thickness;
                     mapPolyline.StrokeDashed = true;
                     mapPolyline.Path = new Geopath(Coords);
 
@@ -468,7 +450,31 @@ namespace TripTrak_2016.Views
                     ret++;
                     //Clear Coords.
                     Coords.Clear();
-                    if (simpleGeoInDateOrder[i].IsCheckPoint == false)
+                    if (simpleGeoInDateOrder[i].IsCheckPoint == false && isAddMilestone)
+                        this.ViewModel.MileStoneLocations.Add(simpleGeoInDateOrder[i]);
+                    breakColor = !breakColor;
+                    color = Colors.CornflowerBlue;
+                    thickness = 2;
+                }
+                else if (simpleGeoInDateOrder[i].DateCreated - simpleGeoInDateOrder[i - 1].DateCreated < TimeSpan.FromMinutes(5))
+                {
+                    Coords.Add(simpleGeoInDateOrder[i].Position);
+                }
+                else
+                {
+                    //define polyline
+                    MapPolyline mapPolyline = new MapPolyline();
+                    mapPolyline.StrokeColor = color;
+                    mapPolyline.StrokeThickness = thickness;
+                    mapPolyline.StrokeDashed = true;
+                    mapPolyline.Path = new Geopath(Coords);
+
+                    //draw polyline on map
+                    this.InputMap.MapElements.Add(mapPolyline);
+                    ret++;
+                    //Clear Coords.
+                    Coords.Clear();
+                    if (simpleGeoInDateOrder[i].IsCheckPoint == false && isAddMilestone)
                         this.ViewModel.MileStoneLocations.Add(simpleGeoInDateOrder[i]);
                 }
             }
@@ -476,8 +482,8 @@ namespace TripTrak_2016.Views
             if (Coords.Count > 1)
             {
                 MapPolyline lastPolyline = new MapPolyline();
-                lastPolyline.StrokeColor = Colors.Black;
-                lastPolyline.StrokeThickness = 2;
+                lastPolyline.StrokeColor = color;
+                lastPolyline.StrokeThickness = thickness;
                 lastPolyline.StrokeDashed = true;
                 lastPolyline.Path = new Geopath(Coords);
 
@@ -486,7 +492,8 @@ namespace TripTrak_2016.Views
                 ret++;
             }
 
-            await setViewOnMap(Coords);
+            if (isAddMilestone)
+                await setViewOnMap(Coords);
 
             return ret;
         }
