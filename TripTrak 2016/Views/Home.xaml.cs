@@ -91,9 +91,12 @@ namespace TripTrak_2016.Views
                 else
                 {
                     this.ViewModel.PinDisplayInformation.FastestRoute = await LocationHelper.getRoute(this.ViewModel.PinDisplayInformation);
-                    var mapRouteView = new MapRouteView(this.ViewModel.PinDisplayInformation.FastestRoute);
-                    mapRouteView.RouteColor = Colors.DeepSkyBlue;
-                    this.InputMap.Routes.Add(mapRouteView);
+                    if (this.ViewModel.PinDisplayInformation.FastestRoute != null)
+                    {
+                        var mapRouteView = new MapRouteView(this.ViewModel.PinDisplayInformation.FastestRoute);
+                        mapRouteView.RouteColor = Colors.DeepSkyBlue;
+                        this.InputMap.Routes.Add(mapRouteView);
+                    }
                 }
             }
         }
