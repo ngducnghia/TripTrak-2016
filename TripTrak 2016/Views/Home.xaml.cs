@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using TripTrak_2016.Helpers;
 using TripTrak_2016.Model;
@@ -11,8 +9,6 @@ using TripTrak_2016.ViewModels;
 using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.ExtendedExecution;
 using Windows.Devices.Geolocation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Networking.Connectivity;
 using Windows.Storage;
 using Windows.Storage.Streams;
@@ -23,9 +19,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Maps;
 using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
@@ -90,6 +84,17 @@ namespace TripTrak_2016.Views
                 //update location info (address) of the selected Pin
                 await LocationHelper.TryUpdateMissingLocationInfoAsync(this.ViewModel.PinDisplayInformation, null);
                 await drawPolylines(this.ViewModel.PinDisplayInformation, false);
+
+                this.InputMap.Routes.Clear();
+                if (this.ViewModel.PinDisplayInformation.FastestRoute != null)
+                    this.InputMap.Routes.Add(new MapRouteView(this.ViewModel.PinDisplayInformation.FastestRoute));
+                else
+                {
+                    this.ViewModel.PinDisplayInformation.FastestRoute = await LocationHelper.getRoute(this.ViewModel.PinDisplayInformation);
+                    var mapRouteView = new MapRouteView(this.ViewModel.PinDisplayInformation.FastestRoute);
+                    mapRouteView.RouteColor = Colors.DeepSkyBlue;
+                    this.InputMap.Routes.Add(mapRouteView);
+                }
             }
         }
 
@@ -363,9 +368,17 @@ namespace TripTrak_2016.Views
                     this.InputMap.Style = MapStyle.Road;
                     MapOptionButton.Flyout.Hide();
                     break;
+                case "Direction":
+                    var currentLocation = await this.GetCurrentLocationAsync();
+                    if (currentLocation != null)
+                    {
+                        await LocationHelper.ShowRouteToLocationInMapsAppAsync(this.ViewModel.PinDisplayInformation, currentLocation);
+                    }
+                    MainButton.Flyout.Hide();
+                    break;
                 case "Take Photo":
                     HistoryDatePicker.Date = DateTime.Now.Date;
-                    await this.ResetViewAsync();
+                    //await this.ResetViewAsync();
                     imagePath = await PhotoHelper.GetPhotoFromCameraLaunch(true);
                     if (imagePath != null)
                     {
@@ -377,7 +390,7 @@ namespace TripTrak_2016.Views
                         this.Frame.Navigate(typeof(PostPhoto), LocationInfo);
                     }
                     radioButton.IsChecked = false;
-                    CameraButton.Flyout.Hide();
+                    MainButton.Flyout.Hide();
                     break;
                 case "Photo Library":
                     imagePath = await PhotoHelper.GetPhotoFromCameraLaunch(false);
@@ -391,7 +404,7 @@ namespace TripTrak_2016.Views
                         this.Frame.Navigate(typeof(PostPhoto), LocationInfo);
                     }
                     radioButton.IsChecked = false;
-                    CameraButton.Flyout.Hide();
+                    MainButton.Flyout.Hide();
                     break;
                 default:
                     break;

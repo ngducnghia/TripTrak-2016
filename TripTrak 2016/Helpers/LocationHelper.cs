@@ -35,6 +35,20 @@ namespace TripTrak_2016.Helpers
             MapService.ServiceToken = "0KEyuXXhxVaOAIXwgvLA~doIeC1quhF2yDcbmlTYc6Q~AqLMibILNUu-ftoKwCf3whcS97LHNcNfVxjhwPQUQiMtbTSuQJHkbZeYm-z-05UY";
         }
 
+        public static async Task<MapRoute> getRoute(LocationPin destinationPin)
+        {
+            var currenLoc = await GetCurrentLocationAsync();
+            var routeResultTask = MapRouteFinder.GetDrivingRouteAsync(
+               currenLoc.Geopoint, destinationPin.Geopoint,
+               MapRouteOptimization.TimeWithTraffic, MapRouteRestrictions.None);
+            MapRouteFinderResult routeResult = await routeResultTask;
+
+            if (routeResult.Status == MapRouteFinderStatus.Success)
+            {
+                return routeResult.Route;
+            }
+            return null;
+        }
 
         public static BasicGeoposition getRandomLocation(BasicGeoposition inputLocation)
         {

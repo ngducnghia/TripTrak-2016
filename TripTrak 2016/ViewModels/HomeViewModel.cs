@@ -32,6 +32,33 @@ namespace TripTrak_2016.ViewModels
         }
 
 
+        private object selectedLocation;
+        /// <summary>
+        /// Gets or sets the LocationData object corresponding to the current selection in the locations list. 
+        /// </summary>
+        public object SelectedLocation
+        {
+            get { return this.selectedLocation; }
+            set
+            {
+                if (this.selectedLocation != value)
+                {
+                    var oldValue = this.selectedLocation as LocationPin;
+                    var newValue = value as LocationPin;
+                    if (oldValue != null)
+                    {
+                        oldValue.IsSelected = false;
+                    }
+                    if (newValue != null)
+                    {
+                        newValue.IsSelected = true;
+                    }
+                    this.selectedLocation = newValue;
+                }
+            }
+        }
+
+
         private ObservableCollection<LocationPin> checkedLocations = new ObservableCollection<LocationPin>();
         /// <summary>
         /// This is Locations where users Check-in or take photo

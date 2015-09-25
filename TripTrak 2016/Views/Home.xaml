@@ -24,8 +24,10 @@
                     maps:MapControl.Location="{x:Bind Geopoint, Mode=OneWay}" 
                     maps:MapControl.NormalizedAnchorPoint="{x:Bind NormalizedAnchorPoint, Mode=OneWay}"/>
 
-                <TextBlock Text="&#xEB9F;" Foreground="Red" FontFamily="Segoe MDL2 Assets" FontSize="32" 
-                                        Visibility="{x:Bind IsCurrentLocation, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Reverse}"
+                <TextBlock Text="&#xEB9F;" 
+                           FontFamily="Segoe MDL2 Assets" FontSize="32" 
+                           Foreground="{Binding IsSelected, Converter={StaticResource ActivatedBrushConverter}}" 
+                           Visibility="{x:Bind IsCurrentLocation, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Reverse}"
                     maps:MapControl.Location="{x:Bind Geopoint, Mode=OneWay}" 
                     maps:MapControl.NormalizedAnchorPoint="{x:Bind NormalizedAnchorPoint, Mode=OneWay}"/>
             </Grid>
@@ -64,8 +66,8 @@
                 <maps:MapItemsControl  ItemsSource="{x:Bind ViewModel.CheckedLocations}" ItemTemplate="{StaticResource InputMapItemTemplate}"/>
             </maps:MapControl>
             <StackPanel Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Right">
-                <Button x:Name="CameraButton" 
-                    ToolTipService.ToolTip="current location" Content="&#xE114;" 
+                <Button x:Name="MainButton" 
+                    ToolTipService.ToolTip="current location" Content="&#xE1C4;" 
                     Style="{StaticResource RoundButton}" Padding="15" Foreground="White" Background="CornflowerBlue"
                     FontFamily="Segoe MDL2 Assets" FontSize="28" Margin="10">
                     <Button.Flyout>
@@ -79,7 +81,12 @@
                                 <StackPanel Orientation="Horizontal">
                                     <!-- My Trips button -->
                                     <RadioButton  Width="150"  Tag="&#xE1D3;"
-                                             Content="Photo Library" Style="{StaticResource SplitViewNavButtonStyle}" Click="RadioButton_Click" />
+                                             Content="Photo Libs" Style="{StaticResource SplitViewNavButtonStyle}" Click="RadioButton_Click" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <!-- My Trips button -->
+                                    <RadioButton  Width="150"  Tag="&#xE816;"
+                                             Content="Direction" Style="{StaticResource SplitViewNavButtonStyle}" Click="RadioButton_Click" />
                                 </StackPanel>
                             </StackPanel>
                         </Flyout>
@@ -125,6 +132,7 @@
                         SmallChange="1" LargeChange="1"  Margin="12,0" MaxWidth="480" VerticalAlignment="Bottom"
                         TickFrequency="1"  />
                 <GridView x:Name="ImageGridView" ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                          SelectedItem="{x:Bind ViewModel.SelectedLocation, Mode=TwoWay}"
                           ScrollViewer.HorizontalScrollBarVisibility="Auto" 
                           ScrollViewer.VerticalScrollMode="Disabled" ScrollViewer.HorizontalScrollMode="Auto"
                           Grid.Row="4" Grid.ColumnSpan="5"

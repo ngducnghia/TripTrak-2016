@@ -9,7 +9,7 @@
             <SolidColorBrush Color="Yellow"/>
         </common:BoolToContentConverter.TrueContent>
         <common:BoolToContentConverter.FalseContent>
-            <SolidColorBrush Color="Transparent"/>
+            <SolidColorBrush Color="CornflowerBlue"/>
         </common:BoolToContentConverter.FalseContent>
     </common:BoolToContentConverter>
 
