@@ -15,7 +15,7 @@
             <Setter Property="MinHeight" Value="0" />
             <Setter Property="Padding" Value="0 0 0 0" />
         </Style>
-        
+
         <DataTemplate x:Key="InputMapItemTemplate" x:DataType="loc:LocationPin">
             <Grid>
 
@@ -36,6 +36,147 @@
         <DataTemplate x:Key="ImageOverlayGalleryFolderDataTemplate">
             <photoControl:SharedPhoto  DoubleTapped="SharedPhoto_DoubleTapped" DataContext="{Binding Photo}"/>
         </DataTemplate>
+        <Style x:Key="SliderStyleTripTrak" TargetType="Slider">
+            <Setter Property="Background" Value="{ThemeResource SystemControlForegroundBaseMediumLowBrush}"/>
+            <Setter Property="BorderThickness" Value="{ThemeResource SliderBorderThemeThickness}"/>
+            <Setter Property="Foreground" Value="{ThemeResource SystemControlHighlightAccentBrush}"/>
+            <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}"/>
+            <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}"/>
+            <Setter Property="ManipulationMode" Value="None"/>
+            <Setter Property="UseSystemFocusVisuals" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Slider">
+                        <Grid Margin="{TemplateBinding Padding}">
+                            <Grid.Resources>
+                                <Style x:Key="SliderThumbStyle" TargetType="Thumb">
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="Background" Value="{ThemeResource SystemControlForegroundAccentBrush}"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" CornerRadius="4"/>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Grid.Resources>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="Pressed">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="HorizontalThumb">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightChromeHighBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="VerticalThumb">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightChromeHighBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Disabled">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="HeaderContentPresenter">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledBaseLowBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill" Storyboard.TargetName="HorizontalDecreaseRect">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledChromeDisabledHighBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill" Storyboard.TargetName="HorizontalTrackRect">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledChromeDisabledHighBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill" Storyboard.TargetName="VerticalDecreaseRect">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledChromeDisabledHighBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill" Storyboard.TargetName="VerticalTrackRect">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledChromeDisabledHighBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="HorizontalThumb">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledChromeDisabledHighBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="VerticalThumb">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledChromeDisabledHighBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill" Storyboard.TargetName="TopTickBar">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledBaseLowBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill" Storyboard.TargetName="BottomTickBar">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledBaseLowBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill" Storyboard.TargetName="LeftTickBar">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledBaseLowBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill" Storyboard.TargetName="RightTickBar">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledBaseLowBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="PointerOver">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill" Storyboard.TargetName="HorizontalTrackRect">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill" Storyboard.TargetName="VerticalTrackRect">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="HorizontalThumb">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightChromeAltLowBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="VerticalThumb">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightChromeAltLowBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <ContentPresenter x:Name="HeaderContentPresenter" ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" FontWeight="{ThemeResource SliderHeaderThemeFontWeight}" Margin="{ThemeResource SliderHeaderThemeMargin}" TextWrapping="Wrap" Visibility="Collapsed" x:DeferLoadStrategy="Lazy"/>
+                            <Grid x:Name="SliderContainer" Background="Transparent" Control.IsTemplateFocusTarget="True" Grid.Row="1">
+                                <Grid x:Name="HorizontalTemplate">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" MinHeight="10"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto" MinHeight="10"/>
+                                    </Grid.RowDefinitions>
+                                    <Rectangle x:Name="HorizontalTrackRect" Grid.ColumnSpan="3" Fill="{TemplateBinding Background}" Height="{ThemeResource SliderTrackThemeHeight}" Grid.Row="1"/>
+                                    <Rectangle x:Name="HorizontalDecreaseRect" Fill="{TemplateBinding Foreground}" Grid.Row="1"/>
+                                    <TickBar x:Name="TopTickBar" Grid.ColumnSpan="3" Fill="{ThemeResource SystemControlForegroundBaseMediumLowBrush}" Height="{ThemeResource SliderOutsideTickBarThemeHeight}" Margin="0,0,0,4" Visibility="Collapsed" VerticalAlignment="Bottom"/>
+                                    <TickBar x:Name="HorizontalInlineTickBar" Grid.ColumnSpan="3" Fill="{ThemeResource SystemControlBackgroundAltHighBrush}" Height="{ThemeResource SliderTrackThemeHeight}" Grid.Row="1" Visibility="Collapsed"/>
+                                    <TickBar x:Name="BottomTickBar" Grid.ColumnSpan="3" Fill="{ThemeResource SystemControlForegroundBaseMediumLowBrush}" Height="{ThemeResource SliderOutsideTickBarThemeHeight}" Margin="0,4,0,0" Grid.Row="2" Visibility="Collapsed" VerticalAlignment="Top"/>
+                                    <Thumb x:Name="HorizontalThumb" AutomationProperties.AccessibilityView="Raw" Background="{ThemeResource SystemControlForegroundAccentBrush}" Grid.Column="1" DataContext="{TemplateBinding Value}" Height="15" Grid.Row="0" Grid.RowSpan="3" Style="{StaticResource SliderThumbStyle}" Width="8"/>
+                                </Grid>
+                                <Grid x:Name="VerticalTemplate" MinWidth="44" Visibility="Collapsed">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="18"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="18"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Rectangle x:Name="VerticalTrackRect" Grid.Column="1" Fill="{TemplateBinding Background}" Grid.RowSpan="3" Width="{ThemeResource SliderTrackThemeHeight}"/>
+                                    <Rectangle x:Name="VerticalDecreaseRect" Grid.Column="1" Fill="{TemplateBinding Foreground}" Grid.Row="2"/>
+                                    <TickBar x:Name="LeftTickBar" Fill="{ThemeResource SystemControlForegroundBaseMediumLowBrush}" HorizontalAlignment="Right" Margin="0,0,4,0" Grid.RowSpan="3" Visibility="Collapsed" Width="{ThemeResource SliderOutsideTickBarThemeHeight}"/>
+                                    <TickBar x:Name="VerticalInlineTickBar" Grid.Column="1" Fill="{ThemeResource SystemControlBackgroundAltHighBrush}" Grid.RowSpan="3" Visibility="Collapsed" Width="{ThemeResource SliderTrackThemeHeight}"/>
+                                    <TickBar x:Name="RightTickBar" Grid.Column="2" Fill="{ThemeResource SystemControlForegroundBaseMediumLowBrush}" HorizontalAlignment="Left" Margin="4,0,0,0" Grid.RowSpan="3" Visibility="Collapsed" Width="{ThemeResource SliderOutsideTickBarThemeHeight}"/>
+                                    <Thumb x:Name="VerticalThumb" AutomationProperties.AccessibilityView="Raw" Background="{ThemeResource SystemControlForegroundAccentBrush}" Grid.ColumnSpan="3" Grid.Column="0" DataContext="{TemplateBinding Value}" Height="8" Grid.Row="1" Style="{StaticResource SliderThumbStyle}" Width="24"/>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Page.Resources>
 
     <Grid>
@@ -57,10 +198,8 @@
             </Grid.RowDefinitions>
             <maps:MapControl x:Name="InputMap" 
                          LandmarksVisible="True" 
-                         BusinessLandmarksVisible="False" 
-                         WatermarkMode="On" 
+                         BusinessLandmarksVisible="True" 
                          ZoomInteractionMode="GestureAndControl"
-                         TrafficFlowVisible="True"
             MapServiceToken="0KEyuXXhxVaOAIXwgvLA~doIeC1quhF2yDcbmlTYc6Q~AqLMibILNUu-ftoKwCf3whcS97LHNcNfVxjhwPQUQiMtbTSuQJHkbZeYm-z-05UY">
 
                 <maps:MapItemsControl  ItemsSource="{x:Bind ViewModel.CheckedLocations}" ItemTemplate="{StaticResource InputMapItemTemplate}"/>
@@ -83,11 +222,6 @@
                                     <RadioButton  Width="150"  Tag="&#xE1D3;"
                                              Content="Photo Libs" Style="{StaticResource SplitViewNavButtonStyle}" Click="RadioButton_Click" />
                                 </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <!-- My Trips button -->
-                                    <RadioButton  Width="150"  Tag="&#xE816;"
-                                             Content="Direction" Style="{StaticResource SplitViewNavButtonStyle}" Click="RadioButton_Click" />
-                                </StackPanel>
                             </StackPanel>
                         </Flyout>
                     </Button.Flyout>
@@ -107,21 +241,25 @@
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="30"/>
-                    <ColumnDefinition Width="120"/>
-                    <ColumnDefinition Width="30"/>
-                    <ColumnDefinition Width="100"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="25"/>
+                    <ColumnDefinition Width="65"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Text="&#xEB49;" Grid.Column="0" Grid.Row="0" Margin="5" Foreground="Black" FontFamily="Segoe MDL2 Assets" FontSize="14" />
-                <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Text="{x:Bind ViewModel.PinDisplayInformation.Address, Mode=OneWay, TargetNullValue=''}" FontSize="12" VerticalAlignment="Center"/>
-                <TextBlock Grid.Column="1" Grid.Row="1"  Text="{x:Bind ViewModel.PinDisplayInformation.FormattedLatLon, Mode=OneWay, TargetNullValue=''}" FontSize="12"/>
+                <TextBlock Text="&#xEB49;" Grid.Column="0" Grid.Row="0" Margin="5"  FontFamily="Segoe MDL2 Assets" FontSize="14" />
+                <TextBlock Name="addressTbl" Tapped="addressTbl_Tapped" Grid.Row="0" Grid.Column="1"  Text="{x:Bind ViewModel.PinDisplayInformation.Address, Mode=OneWay, TargetNullValue=''}" FontSize="12" VerticalAlignment="Center"/>
+                <TextBlock Name="LatLonTbl" Tapped="addressTbl_Tapped" Grid.Column="1" Grid.Row="1"  Text="{x:Bind ViewModel.PinDisplayInformation.FormattedLatLon, Mode=OneWay, TargetNullValue=''}" FontSize="12"/>
 
-                <TextBlock Text="&#xE1CF;" Grid.Column="2" Grid.Row="1" Margin="9,0,5,0" Foreground="Black" FontFamily="Segoe MDL2 Assets" FontSize="14"/>
-                <TextBlock  Grid.Column="3" Grid.Row="1"  Text="{x:Bind ViewModel.PinDisplayInformation.Name, Mode=OneWay, TargetNullValue=''}"
+                <TextBlock Text="&#xE1CF;" Grid.Column="2" Grid.Row="0" Margin="5" FontFamily="Segoe MDL2 Assets" FontSize="14"/>
+                <TextBlock  Grid.Column="3" Grid.Row="0"   VerticalAlignment="Center"
+                            Text="{x:Bind ViewModel.PinDisplayInformation.Name, Mode=OneWay, TargetNullValue=''}"
                            Foreground="CornflowerBlue" Margin="0,0" FontSize="12"/>
-                <TextBlock  Grid.Column="4" Grid.Row="1"  Text="{x:Bind ViewModel.PinDisplayInformation.FormattedDateCreatedTime, Mode=OneWay, TargetNullValue=''}"
-                           Foreground="CornflowerBlue" Margin="0,0" FontSize="12"/>
+                <TextBlock Text="&#xE121;" Grid.Column="2" 
+                           Grid.Row="1" Margin="5"  
+                            FontFamily="Segoe MDL2 Assets" FontSize="14"/>
+                <TextBlock  Grid.Column="3" Grid.Row="1"  VerticalAlignment="Center"
+                            Text="{x:Bind ViewModel.PinDisplayInformation.FormattedDateCreatedTime, Mode=OneWay, TargetNullValue=''}"
+                           Foreground="CornflowerBlue"  FontSize="12"/>
                 <TextBlock Text="&#xEA8C;" Grid.Column="0" Grid.Row="2" Margin="9,0,5,0" 
                            Foreground="Black" FontFamily="Segoe MDL2 Assets" FontSize="12"/>
                 <Grid Grid.Column="1" Grid.Row="2">
@@ -129,11 +267,12 @@
                            Foreground="CornflowerBlue" Width="Auto" Margin="0,0" FontSize="12" Height="Auto"/>
                 </Grid>
                 <Slider x:Name="CheckPointSlider" Grid.ColumnSpan="5" Grid.Row="3"
-                        SmallChange="1" LargeChange="1"  Margin="12,0" MaxWidth="480" VerticalAlignment="Bottom"
-                        TickFrequency="1"  />
+                        SmallChange="1" LargeChange="1"  Margin="12,0" MaxWidth="480"
+                        TickFrequency="1" Style="{StaticResource SliderStyleTripTrak}"  />
                 <GridView x:Name="ImageGridView" ScrollViewer.VerticalScrollBarVisibility="Disabled"
                           SelectedItem="{x:Bind ViewModel.SelectedLocation, Mode=TwoWay}"
                           ScrollViewer.HorizontalScrollBarVisibility="Auto" 
+                          Margin="10,0"
                           ScrollViewer.VerticalScrollMode="Disabled" ScrollViewer.HorizontalScrollMode="Auto"
                           Grid.Row="4" Grid.ColumnSpan="5"
                           ItemsSource="{x:Bind ViewModel.CheckedLocations}"
@@ -193,8 +332,8 @@
                     Content="&#xE0A6;" HorizontalAlignment="Left" VerticalAlignment="Top"
                     Style="{StaticResource RoundButton}" Foreground="White" Background="CornflowerBlue"
                     FontFamily="Segoe MDL2 Assets" FontSize="28" Margin="10"/>
-                <Image x:Name="EnlargeImage" />
+            <Image x:Name="EnlargeImage" />
         </Grid>
-    
+
     </Grid>
 </Page>

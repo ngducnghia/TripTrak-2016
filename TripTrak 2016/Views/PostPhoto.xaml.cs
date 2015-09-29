@@ -88,7 +88,10 @@ namespace TripTrak_2016.Views
                 imgSource.SetSource(stream);
                 imageToPost.Source = imgSource;
             }
-            LocationNameTbl.Text = locationName;
+            if (locationName != null)
+                LocationNameTbl.Text = locationName;
+            else
+                LocationNameTbl.Text = "Unknown";
             base.OnNavigatedTo(e);
         }
 

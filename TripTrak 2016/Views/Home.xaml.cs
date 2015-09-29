@@ -371,17 +371,7 @@ namespace TripTrak_2016.Views
                     this.InputMap.Style = MapStyle.Road;
                     MapOptionButton.Flyout.Hide();
                     break;
-                case "Direction":
-                    var currentLocation = await this.GetCurrentLocationAsync();
-                    if (currentLocation != null)
-                    {
-                        await LocationHelper.ShowRouteToLocationInMapsAppAsync(this.ViewModel.PinDisplayInformation, currentLocation);
-                    }
-                    MainButton.Flyout.Hide();
-                    break;
                 case "Take Photo":
-                    HistoryDatePicker.Date = DateTime.Now.Date;
-                    //await this.ResetViewAsync();
                     imagePath = await PhotoHelper.GetPhotoFromCameraLaunch(true);
                     if (imagePath != null)
                     {
@@ -395,7 +385,7 @@ namespace TripTrak_2016.Views
                     radioButton.IsChecked = false;
                     MainButton.Flyout.Hide();
                     break;
-                case "Photo Library":
+                case "Photo Libs":
                     imagePath = await PhotoHelper.GetPhotoFromCameraLaunch(false);
                     if (imagePath != null)
                     {
@@ -472,7 +462,7 @@ namespace TripTrak_2016.Views
                     color = Colors.CornflowerBlue;
                     thickness = 2;
                 }
-                else if (simpleGeoInDateOrder[i].DateCreated - simpleGeoInDateOrder[i - 1].DateCreated < TimeSpan.FromMinutes(5))
+                else if (simpleGeoInDateOrder[i].DateCreated - simpleGeoInDateOrder[i - 1].DateCreated < TimeSpan.FromMinutes(5) && Coords.Count < 200)
                 {
                     Coords.Add(simpleGeoInDateOrder[i].Position);
                 }
@@ -544,6 +534,15 @@ namespace TripTrak_2016.Views
         {
             EnlargeImage.Source = null;
             EnlargeImageGrid.Visibility = Visibility.Collapsed;
+        }
+
+        private async void addressTbl_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            var currentLocation = await this.GetCurrentLocationAsync();
+            if (currentLocation != null)
+            {
+                await LocationHelper.ShowRouteToLocationInMapsAppAsync(this.ViewModel.PinDisplayInformation, currentLocation);
+            }
         }
     }
 }

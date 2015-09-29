@@ -41,7 +41,7 @@
                     <!-- Settings button -->
                     <RadioButton Tag="&#xE125;" Content="Friends" Style="{StaticResource SplitViewNavButtonStyle}" />
 
-                    <Line Stroke="Gray"  StrokeThickness="4" Margin="0,20" Height="5" X2="300"/>
+                    <Line Stroke="Gray"  StrokeThickness="4" Height="5" X2="300"/>
                     <!-- Settings button -->
                     <RadioButton Tag="&#xe115;" Content="Settings" Style="{StaticResource SplitViewNavButtonStyle}"  Checked="RadioButton_Checked"/>
                     
