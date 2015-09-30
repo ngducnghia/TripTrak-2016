@@ -378,7 +378,6 @@ namespace TripTrak_2016.Views
                         Dictionary<string, string> LocationInfo = new Dictionary<string, string>();
 
                         LocationInfo.Add("ImagePath", imagePath);
-                        LocationInfo.Add("LocationName", this.ViewModel.PinDisplayInformation.Name);
                         App.PageName = "Post to TripTrak";
                         this.Frame.Navigate(typeof(PostPhoto), LocationInfo);
                     }
@@ -392,7 +391,6 @@ namespace TripTrak_2016.Views
                         Dictionary<string, string> LocationInfo = new Dictionary<string, string>();
 
                         LocationInfo.Add("ImagePath", imagePath);
-                        LocationInfo.Add("LocationName", this.ViewModel.PinDisplayInformation.Name);
                         App.PageName = "Post to TripTrak";
                         this.Frame.Navigate(typeof(PostPhoto), LocationInfo);
                     }

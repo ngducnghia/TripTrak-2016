@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 using TripTrak_2016.Helpers;
 using TripTrak_2016.Model;
 using Windows.ApplicationModel.Contacts;
+using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
+using Windows.Storage.FileProperties;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -77,10 +79,15 @@ namespace TripTrak_2016.Views
             {
                 var dic = e.Parameter as Dictionary<string, string>;
                 imageName = dic["ImagePath"];
-                locationName = dic["LocationName"];
             }
             StorageFile sourcePhoto = await KnownFolders.CameraRoll.GetFileAsync(imageName);
             IRandomAccessStream stream = await sourcePhoto.OpenAsync(FileAccessMode.Read);
+
+            Geopoint geopoint = await GeotagHelper.GetGeotagAsync(sourcePhoto);
+            if (geopoint != null && geopoint.Position.Latitude != 0)
+                App.currentLocation.Position = geopoint.Position;
+            await LocationHelper.TryUpdateMissingLocationInfoAsync(App.currentLocation, null);
+            locationName = App.currentLocation.Name;
 
             if (sourcePhoto != null)
             {
