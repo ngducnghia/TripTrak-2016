@@ -58,7 +58,7 @@ namespace TripTrak_2016.Helpers
         /// <param name="locations">The BasicGeoposition list  to save.</param>
         public async Task InsertLocationDataAsync(LocationPin location)
         {
-            string fileName = GenerateFileName(dataFileName, DateTime.Now);
+            string fileName = GenerateFileName(dataFileName, location.DateCreated.Date);
             StorageFile sampleFile = await ApplicationData.Current.RoamingFolder.CreateFileAsync(
                 fileName, CreationCollisionOption.OpenIfExists);
             using (MemoryStream stream = new MemoryStream())

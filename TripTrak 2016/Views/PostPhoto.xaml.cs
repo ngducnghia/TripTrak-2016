@@ -59,7 +59,8 @@ namespace TripTrak_2016.Views
                     ImageName = imageName,
                     Description = DescriptionTb.Text,
                 },
-                IsCheckPoint = true
+                IsCheckPoint = true,
+                DateCreated = App.currentLocation.DateCreated
             };
             await localData.InsertLocationDataAsync(item);
             App.isSimpleMap = false;
@@ -86,6 +87,7 @@ namespace TripTrak_2016.Views
             Geopoint geopoint = await GeotagHelper.GetGeotagAsync(sourcePhoto);
             if (geopoint != null && geopoint.Position.Latitude != 0)
                 App.currentLocation.Position = geopoint.Position;
+            App.currentLocation.DateCreated = sourcePhoto.DateCreated;
             await LocationHelper.TryUpdateMissingLocationInfoAsync(App.currentLocation, null);
             locationName = App.currentLocation.Name;
 
