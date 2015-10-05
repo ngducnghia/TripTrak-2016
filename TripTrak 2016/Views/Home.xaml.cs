@@ -85,7 +85,7 @@ namespace TripTrak_2016.Views
 
                 //update location info (address) of the selected Pin
                 await LocationHelper.TryUpdateMissingLocationInfoAsync(this.ViewModel.PinDisplayInformation, null);
-                await drawPolylines(this.ViewModel.PinDisplayInformation, false);
+                drawPolylines(this.ViewModel.PinDisplayInformation, false);
 
                 this.InputMap.Routes.Clear();
                 if (this.ViewModel.PinDisplayInformation.FastestRoute != null)
@@ -148,7 +148,7 @@ namespace TripTrak_2016.Views
                         }
                     }
                 }
-                var numberOfPolylines = await drawPolylines(this.ViewModel.PinDisplayInformation, true);
+                var numberOfPolylines = drawPolylines(this.ViewModel.PinDisplayInformation, true);
                 if (this.ViewModel.PinnedLocations.Count > 0)
                     ret = !ret;
                 CheckPointSlider.Maximum = this.ViewModel.MileStoneLocations.Count() - 1;
@@ -424,7 +424,7 @@ namespace TripTrak_2016.Views
             }
         }
 
-        private async Task<int> drawPolylines(LocationPin breakColorPin, bool isAddMilestone)
+        private  int drawPolylines(LocationPin breakColorPin, bool isAddMilestone)
         {
             int ret = 0;
             //remove all current polylines on map
