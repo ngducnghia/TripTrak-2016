@@ -37,12 +37,15 @@ namespace TripTrak_2016.Helpers
 
         public static async Task<MapRoute> getRoute(LocationPin destinationPin)
         {
+            if (string.IsNullOrEmpty(destinationPin.Address))
+                return null;
             var currenLoc = await GetCurrentLocationAsync();
             var routeResultTask = MapRouteFinder.GetDrivingRouteAsync(
                currenLoc.Geopoint, destinationPin.Geopoint,
                MapRouteOptimization.TimeWithTraffic, MapRouteRestrictions.None);
             MapRouteFinderResult routeResult = await routeResultTask;
-
+            destinationPin.CurrentTravelDistance = Math.Round(routeResult.Route.LengthInMeters * 0.00062137, 1); // convert to miles
+            destinationPin.CurrentTravelTime = (int)routeResult.Route.EstimatedDuration.TotalMinutes;
             if (routeResult.Status == MapRouteFinderStatus.Success)
             {
                 return routeResult.Route;
@@ -142,7 +145,7 @@ namespace TripTrak_2016.Helpers
         public static async Task ShowRouteToLocationInMapsAppAsync(LocationPin location, LocationPin currentLocation)
         {
             var mapUri = new Uri("bingmaps:?trfc=1&rtp=" +
-                $"pos.{Math.Round(currentLocation.Position.Latitude, 6)}_{Math.Round(currentLocation.Position.Longitude, 6)}~" +
+                $"pos.{currentLocation.Position.Latitude}_{currentLocation.Position.Longitude}~" +
                 $"pos.{location.Position.Latitude}_{location.Position.Longitude}");
             await Windows.System.Launcher.LaunchUriAsync(mapUri);
         }

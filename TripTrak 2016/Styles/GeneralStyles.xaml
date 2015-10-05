@@ -4,12 +4,21 @@
     xmlns:common="using:TripTrak_2016.Common">
 
     <common:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-    <common:BoolToContentConverter x:Key="ActivatedBrushConverter" NullContent="Black">
+    <common:BoolToContentConverter x:Key="ForegroundBrushConverter" NullContent="Black">
         <common:BoolToContentConverter.TrueContent>
-            <SolidColorBrush Color="Yellow"/>
+            <SolidColorBrush Color="White"/>
         </common:BoolToContentConverter.TrueContent>
         <common:BoolToContentConverter.FalseContent>
+            <SolidColorBrush Color="Black"/>
+        </common:BoolToContentConverter.FalseContent>
+    </common:BoolToContentConverter>
+
+    <common:BoolToContentConverter x:Key="BackgroundBrushConverter" NullContent="Black">
+        <common:BoolToContentConverter.TrueContent>
             <SolidColorBrush Color="CornflowerBlue"/>
+        </common:BoolToContentConverter.TrueContent>
+        <common:BoolToContentConverter.FalseContent>
+            <SolidColorBrush Color="White"/>
         </common:BoolToContentConverter.FalseContent>
     </common:BoolToContentConverter>
 
@@ -25,7 +34,7 @@
         <Setter Property="Foreground" Value="{ThemeResource SystemControlForegroundBaseHighBrush}"/>
         <Setter Property="BorderBrush" Value="{ThemeResource SystemControlForegroundTransparentBrush}"/>
         <Setter Property="BorderThickness" Value="{ThemeResource ButtonBorderThemeThickness}"/>
-        <Setter Property="Padding" Value="8,4,8,4"/>
+        <Setter Property="Padding" Value="4"/>
         <Setter Property="HorizontalAlignment" Value="Left"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}"/>

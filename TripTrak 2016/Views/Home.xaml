@@ -18,18 +18,40 @@
 
         <DataTemplate x:Key="InputMapItemTemplate" x:DataType="loc:LocationPin">
             <Grid>
-
                 <TextBlock Text="&#xEB49;" Foreground="Blue" FontFamily="Segoe MDL2 Assets" FontSize="32" 
                     Visibility="{x:Bind IsCurrentLocation, Converter={StaticResource BooleanToVisibilityConverter}}"
                     maps:MapControl.Location="{x:Bind Geopoint, Mode=OneWay}" 
                     maps:MapControl.NormalizedAnchorPoint="{x:Bind NormalizedAnchorPoint, Mode=OneWay}"/>
 
-                <TextBlock Text="&#xEB9F;" 
-                           FontFamily="Segoe MDL2 Assets" FontSize="32" 
-                           Foreground="{Binding IsSelected, Converter={StaticResource ActivatedBrushConverter}}" 
-                           Visibility="{x:Bind IsCurrentLocation, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Reverse}"
-                    maps:MapControl.Location="{x:Bind Geopoint, Mode=OneWay}" 
-                    maps:MapControl.NormalizedAnchorPoint="{x:Bind NormalizedAnchorPoint, Mode=OneWay}"/>
+                <Button Name="checkedPinBtn" Content="&#xEB9F;" FontFamily="Segoe MDL2 Assets" FontSize="20"
+                    Style="{StaticResource RoundButton}" FontWeight="ExtraBold"
+                    Background="{Binding IsSelected, Converter={StaticResource BackgroundBrushConverter}}" 
+                    Foreground="{Binding IsSelected, Converter={StaticResource ForegroundBrushConverter}}" 
+                    Visibility="{x:Bind IsCurrentLocation, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Reverse}"
+                    maps:MapControl.Location="{x:Bind Geopoint, Mode=OneWay}"
+                        Click="checkedPinBtn_Click"
+                    maps:MapControl.NormalizedAnchorPoint="{x:Bind NormalizedAnchorPoint, Mode=OneWay}">
+                    <Button.Flyout>
+                        <Flyout Placement="Top">
+                            <Flyout.FlyoutPresenterStyle>
+                                <Style TargetType="FlyoutPresenter">
+                                    <Setter Property="Padding" Value="0"/>
+                                </Style>
+                            </Flyout.FlyoutPresenterStyle>
+
+                            <Grid Background="CornflowerBlue">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Margin="10,0,0,0" Foreground="White" TextWrapping="WrapWholeWords" Grid.Row="0"
+                                             Text="{Binding FormattedCurrentTravelDistance}" />
+                                <TextBlock Margin="10,0,0,0"  Foreground="White" Grid.Row="1"
+                                             Text="{Binding FormattedCurrentTravelTime}" />
+                            </Grid>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
             </Grid>
         </DataTemplate>
 
@@ -230,10 +252,10 @@
             </StackPanel>
 
 
-            <Grid Grid.Row="1" Background="White" >
+            <Grid Grid.Row="1" Background="White" x:Name="displayInfoGrid" >
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="24"/>
-                    <RowDefinition Height="24"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="20"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>

@@ -45,9 +45,11 @@ namespace TripTrak_2016.Views
             PrevDayButton.Click += PrevDayButton_Click;
             NextDayButton.Click += NextDayButton_Click;
             CheckPointSlider.ValueChanged += CheckPointSlider_ValueChanged;
+            InputMap.MapTapped += InputMap_MapTapped;
         }
 
-        private async void ImageGridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+
+        private void ImageGridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             try
             {
@@ -150,6 +152,12 @@ namespace TripTrak_2016.Views
                 if (this.ViewModel.PinnedLocations.Count > 0)
                     ret = !ret;
                 CheckPointSlider.Maximum = this.ViewModel.MileStoneLocations.Count() - 1;
+
+                // Set the current view of the map control. 
+                var positions = this.ViewModel.CheckedLocations.Select(loc => loc.Position).ToList();
+                //if (currentLocation != null)
+                //    positions.Insert(0, currentLocation.Position);
+                await setViewOnMap(positions);
             }
             return ret;
         }
@@ -317,12 +325,7 @@ namespace TripTrak_2016.Views
                 this.ViewModel.PinDisplayInformation = new LocationPin { Position = currentLocation.Position, IsCurrentLocation = true };
                 this.ViewModel.CheckedLocations.Add(new LocationPin { Position = currentLocation.Position, IsCurrentLocation = true });
                 await LocationHelper.TryUpdateMissingLocationInfoAsync(this.ViewModel.PinDisplayInformation, null);
-            }
-            // Set the current view of the map control. 
-            var positions = this.ViewModel.CheckedLocations.Select(loc => loc.Position).ToList();
-            //if (currentLocation != null)
-            //    positions.Insert(0, currentLocation.Position);
-            await setViewOnMap(positions);
+            }           
         }
 
         /// <summary>
@@ -496,9 +499,6 @@ namespace TripTrak_2016.Views
                 ret++;
             }
 
-            if (isAddMilestone)
-                await setViewOnMap(Coords);
-
             return ret;
         }
 
@@ -541,6 +541,21 @@ namespace TripTrak_2016.Views
             {
                 await LocationHelper.ShowRouteToLocationInMapsAppAsync(this.ViewModel.PinDisplayInformation, currentLocation);
             }
+        }
+
+        private void checkedPinBtn_Click(object sender, RoutedEventArgs e)
+        {
+            LocationPin btnPin = ((Button)sender).DataContext as LocationPin;
+
+            //move the slider, photo list along
+            ImageGridView.SelectedIndex = this.ViewModel.CheckedLocations.IndexOf(btnPin);
+            displayInfoGrid.Visibility = Visibility.Visible;
+        }
+
+
+        private void InputMap_MapTapped(MapControl sender, MapInputEventArgs args)
+        {
+            displayInfoGrid.Visibility = Visibility.Collapsed;
         }
     }
 }
