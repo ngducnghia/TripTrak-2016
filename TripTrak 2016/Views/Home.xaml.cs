@@ -85,8 +85,10 @@ namespace TripTrak_2016.Views
 
                 //update location info (address) of the selected Pin
                 await LocationHelper.TryUpdateMissingLocationInfoAsync(this.ViewModel.PinDisplayInformation, null);
-                drawPolylines(this.ViewModel.PinDisplayInformation, false);
+               ViewModel.drawPolylines(this.ViewModel.PinDisplayInformation, false, this.InputMap);
 
+
+                //update route and time to destination
                 this.InputMap.Routes.Clear();
                 if (this.ViewModel.PinDisplayInformation.FastestRoute != null)
                     this.InputMap.Routes.Add(new MapRouteView(this.ViewModel.PinDisplayInformation.FastestRoute));
@@ -148,7 +150,7 @@ namespace TripTrak_2016.Views
                         }
                     }
                 }
-                var numberOfPolylines = drawPolylines(this.ViewModel.PinDisplayInformation, true);
+                var numberOfPolylines = ViewModel.drawPolylines(this.ViewModel.PinDisplayInformation, true, this.InputMap);
                 if (this.ViewModel.PinnedLocations.Count > 0)
                     ret = !ret;
                 CheckPointSlider.Maximum = this.ViewModel.MileStoneLocations.Count() - 1;
@@ -157,7 +159,7 @@ namespace TripTrak_2016.Views
                 var positions = this.ViewModel.CheckedLocations.Select(loc => loc.Position).ToList();
                 //if (currentLocation != null)
                 //    positions.Insert(0, currentLocation.Position);
-                await setViewOnMap(positions);
+                await ViewModel.setViewOnMap(positions, this.InputMap);
             }
             return ret;
         }
@@ -322,10 +324,11 @@ namespace TripTrak_2016.Views
                     if (currentLoc != null && currentLoc.IsCurrentLocation)
                         this.ViewModel.CheckedLocations.Remove(currentLoc);
                 }
+                this.InputMap.Center = new Geopoint(currentLocation.Position);
                 this.ViewModel.PinDisplayInformation = new LocationPin { Position = currentLocation.Position, IsCurrentLocation = true };
                 this.ViewModel.CheckedLocations.Add(new LocationPin { Position = currentLocation.Position, IsCurrentLocation = true });
                 await LocationHelper.TryUpdateMissingLocationInfoAsync(this.ViewModel.PinDisplayInformation, null);
-            }           
+            }
         }
 
         /// <summary>
@@ -340,22 +343,7 @@ namespace TripTrak_2016.Views
             return currentLocation;
         }
 
-        private async Task setViewOnMap(List<BasicGeoposition> positions)
-        {
-            if (positions.Count == 0)
-                return;
-            var bounds = GeoboundingBox.TryCompute(positions);
-            double viewWidth = ApplicationView.GetForCurrentView().VisibleBounds.Width;
-            var margin = new Thickness((viewWidth >= 500 ? 300 : 10), 10, 10, 10);
-            bool isSuccessful = await this.InputMap.TrySetViewBoundsAsync(bounds, margin, MapAnimationKind.Default);
-            if (isSuccessful && positions.Count < 2)
-                this.InputMap.ZoomLevel = 15;
-            else if (!isSuccessful && positions.Count > 0)
-            {
-                this.InputMap.Center = new Geopoint(positions[0]);
-                this.InputMap.ZoomLevel = 15;
-            }
-        }
+
 
         #endregion
 
@@ -416,6 +404,8 @@ namespace TripTrak_2016.Views
                     button.IsEnabled = false;
                     if (HistoryDatePicker.Date.Date != DateTime.Now.Date.Date)
                         HistoryDatePicker.Date = DateTime.Now.Date;
+
+                    displayInfoGrid.Visibility = Visibility.Visible;
                     await this.ResetViewAsync();
                     button.IsEnabled = true;
                     break;
@@ -424,83 +414,7 @@ namespace TripTrak_2016.Views
             }
         }
 
-        private  int drawPolylines(LocationPin breakColorPin, bool isAddMilestone)
-        {
-            int ret = 0;
-            //remove all current polylines on map
-            this.InputMap.MapElements.Clear();
-
-            //Order points by DateCreated
-            var simpleGeoInDateOrder = this.ViewModel.PinnedLocations.OrderBy(x => x.DateCreated).ToList();
-            var color = Colors.Blue;
-            double thickness = 3;
-            var Coords = new List<BasicGeoposition>();
-            bool breakColor = false;
-            //Query Points list to draw Polylines
-            for (int i = 0; i < simpleGeoInDateOrder.Count; i++)
-            {
-                if (simpleGeoInDateOrder[i].IsCheckPoint == true && isAddMilestone)
-                    this.ViewModel.MileStoneLocations.Add(simpleGeoInDateOrder[i]);
-                if (Coords.Count == 0)
-                    Coords.Add(simpleGeoInDateOrder[i].Position);
-                else if (!breakColor && simpleGeoInDateOrder[i].DateCreated > breakColorPin.DateCreated)
-                {
-                    //define polyline
-                    MapPolyline mapPolyline = new MapPolyline();
-                    mapPolyline.StrokeColor = color;
-                    mapPolyline.StrokeThickness = thickness;
-                    mapPolyline.StrokeDashed = true;
-                    mapPolyline.Path = new Geopath(Coords);
-
-                    //draw polyline on map
-                    this.InputMap.MapElements.Add(mapPolyline);
-                    ret++;
-                    //Clear Coords.
-                    Coords.Clear();
-                    if (simpleGeoInDateOrder[i].IsCheckPoint == false && isAddMilestone)
-                        this.ViewModel.MileStoneLocations.Add(simpleGeoInDateOrder[i]);
-                    breakColor = !breakColor;
-                    color = Colors.CornflowerBlue;
-                    thickness = 2;
-                }
-                else if (simpleGeoInDateOrder[i].DateCreated - simpleGeoInDateOrder[i - 1].DateCreated < TimeSpan.FromMinutes(5) && Coords.Count < 200)
-                {
-                    Coords.Add(simpleGeoInDateOrder[i].Position);
-                }
-                else
-                {
-                    //define polyline
-                    MapPolyline mapPolyline = new MapPolyline();
-                    mapPolyline.StrokeColor = color;
-                    mapPolyline.StrokeThickness = thickness;
-                    mapPolyline.StrokeDashed = true;
-                    mapPolyline.Path = new Geopath(Coords);
-
-                    //draw polyline on map
-                    this.InputMap.MapElements.Add(mapPolyline);
-                    ret++;
-                    //Clear Coords.
-                    Coords.Clear();
-                    if (simpleGeoInDateOrder[i].IsCheckPoint == false && isAddMilestone)
-                        this.ViewModel.MileStoneLocations.Add(simpleGeoInDateOrder[i]);
-                }
-            }
-            //draw last Polyline on map
-            if (Coords.Count > 1)
-            {
-                MapPolyline lastPolyline = new MapPolyline();
-                lastPolyline.StrokeColor = color;
-                lastPolyline.StrokeThickness = thickness;
-                lastPolyline.StrokeDashed = true;
-                lastPolyline.Path = new Geopath(Coords);
-
-                //draw polyline on map
-                this.InputMap.MapElements.Add(lastPolyline);
-                ret++;
-            }
-
-            return ret;
-        }
+      
 
         private async void SharedPhoto_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {

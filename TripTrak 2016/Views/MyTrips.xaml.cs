@@ -25,6 +25,13 @@ namespace TripTrak_2016.Views
         public MyTrips()
         {
             this.InitializeComponent();
+            CreateTripButton.Click += CreateTripButton_Click;
+        }
+
+        private void CreateTripButton_Click(object sender, RoutedEventArgs e)
+        {
+            App.PageName = "Create new trip";
+            this.Frame.Navigate(typeof(CreateTrip));
         }
     }
 }

@@ -24,6 +24,30 @@ namespace TripTrak_2016.Helpers
             return context + "_" + DateTime.Now.ToString("yyyyMMddHH") + "_" + Guid.NewGuid().ToString() + ".jpg";
         }
 
+        public static async Task<BitmapImage> getImageSource(string imageName)
+        {
+            if (string.IsNullOrEmpty(imageName))
+            {
+                return null;
+            }
+            try
+            {
+                StorageFile sourcePhoto = await KnownFolders.CameraRoll.GetFileAsync(imageName);
+                if (sourcePhoto != null)
+                {
+                    var fileStream = await sourcePhoto.GetThumbnailAsync(ThumbnailMode.PicturesView);
+                    sourcePhoto = null;
+                    var img = new BitmapImage();
+                    img.SetSource(fileStream);
+                    return img;
+                }
+            }
+            catch (Exception e)
+            {
+            }
+            return null;
+        }
+
         public static async Task<string> GetPhotoFromCameraLaunch(bool isCamera)
         {
             StorageFile photo = null;

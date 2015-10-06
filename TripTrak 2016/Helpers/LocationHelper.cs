@@ -44,11 +44,14 @@ namespace TripTrak_2016.Helpers
                currenLoc.Geopoint, destinationPin.Geopoint,
                MapRouteOptimization.TimeWithTraffic, MapRouteRestrictions.None);
             MapRouteFinderResult routeResult = await routeResultTask;
-            destinationPin.CurrentTravelDistance = Math.Round(routeResult.Route.LengthInMeters * 0.00062137, 1); // convert to miles
-            destinationPin.CurrentTravelTime = (int)routeResult.Route.EstimatedDuration.TotalMinutes;
             if (routeResult.Status == MapRouteFinderStatus.Success)
             {
-                return routeResult.Route;
+                destinationPin.CurrentTravelDistance = Math.Round(routeResult.Route.LengthInMeters * 0.00062137, 1); // convert to miles
+                destinationPin.CurrentTravelTime = (int)routeResult.Route.EstimatedDuration.TotalMinutes;
+                if (routeResult.Status == MapRouteFinderStatus.Success)
+                {
+                    return routeResult.Route;
+                }
             }
             return null;
         }

@@ -8,6 +8,28 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Pivot>
+            <Pivot.HeaderTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <TextBlock Text="{Binding}" Foreground="Teal" />
+                    </Grid>
+                </DataTemplate>
+            </Pivot.HeaderTemplate>
 
+            <PivotItem Header="On Going Trip">
+                <Grid/>
+            </PivotItem>
+            <PivotItem Header="Completed Trip">
+                <Grid/>
+            </PivotItem>
+            <PivotItem Header="Planned Trip">
+                <Grid/>
+            </PivotItem>
+        </Pivot>
+        <Button x:Name="CreateTripButton" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                    ToolTipService.ToolTip="current location" Content="&#xE109;" 
+                    Style="{StaticResource RoundButton}" Padding="15" Foreground="White" Background="CornflowerBlue"
+                    FontFamily="Segoe MDL2 Assets" FontSize="28" Margin="10"/>
     </Grid>
 </Page>
