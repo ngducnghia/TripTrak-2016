@@ -8,6 +8,21 @@ namespace TripTrak_2016.Model
 {
     public class Trip : BindableBase
     {
+        private DateTimeOffset dateCreated = DateTimeOffset.Now;
+        /// <summary>
+        /// Gets or sets a value that indicates when the travel info was last updated. 
+        /// </summary>
+        public DateTimeOffset DateCreated
+        {
+            get
+            {
+                return this.dateCreated;
+            }
+            set
+            {
+                this.SetProperty(ref this.dateCreated, value);
+            }
+        }
         private string name;
         /// <summary>
         /// Gets or sets the name of the location.

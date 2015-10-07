@@ -36,6 +36,21 @@ namespace TripTrak_2016.Views
             this.InitializeComponent();
             this.ViewModel = new HomeViewModel();
             HistoryDatePicker.DateChanged += HistoryDatePicker_DateChanged;
+            createButton.Click += CreateButton_Click;
+        }
+
+        private async void CreateButton_Click(object sender, RoutedEventArgs e)
+        {
+            var item = new Trip
+            {
+                Name = NameTb.Text,
+                Description = DescTb.Text,
+                ShareWith = shareTb.Text,
+                Type = "On-going",
+                StartPin = oldPin
+            };
+            await localData.CreateNewTrip(item);
+            this.Frame.GoBack();
         }
 
 

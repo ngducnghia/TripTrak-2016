@@ -18,7 +18,9 @@
             </Pivot.HeaderTemplate>
 
             <PivotItem Header="On Going Trip">
-                <Grid/>
+                <Grid>
+                    <TextBlock Name="MainText"/>
+                </Grid>
             </PivotItem>
             <PivotItem Header="Completed Trip">
                 <Grid/>
