@@ -46,7 +46,7 @@
                                  ZoomInteractionMode="Disabled"  Height="150" Width="330"
             MapServiceToken="0KEyuXXhxVaOAIXwgvLA~doIeC1quhF2yDcbmlTYc6Q~AqLMibILNUu-ftoKwCf3whcS97LHNcNfVxjhwPQUQiMtbTSuQJHkbZeYm-z-05UY">
 
-            <maps:MapItemsControl x:Name="mapItem" ItemTemplate="{StaticResource MyTripItemTemplate}"/>
+            <maps:MapItemsControl x:Name="mapItem" ItemsSource="{x:Bind ViewModel.CheckedLocations}" ItemTemplate="{StaticResource MyTripItemTemplate}"/>
         </maps:MapControl>
         <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Margin="0,0,40,0" Content="End Trip"/>

@@ -175,6 +175,33 @@ namespace TripTrak_2016.ViewModels
             return ret;
         }
 
+        public List<BasicGeoposition> drawPolylines(ObservableCollection<LocationPin> pins, MapControl map)
+        {
+            //remove all current polylines on map
+            map.MapElements.Clear();
+
+            //Order points by DateCreated
+            var simpleGeoInDateOrder = pins.OrderBy(x => x.DateCreated).ToList();
+            var color = Colors.Blue;
+            double thickness = 3;
+            var Coords = new List<BasicGeoposition>();
+            for (int i = 0; i < simpleGeoInDateOrder.Count; i++)
+            {
+                Coords.Add(simpleGeoInDateOrder[i].Position);
+            }
+            //define polyline
+            MapPolyline mapPolyline = new MapPolyline();
+            mapPolyline.StrokeColor = color;
+            mapPolyline.StrokeThickness = thickness;
+            mapPolyline.StrokeDashed = true;
+            mapPolyline.Path = new Geopath(Coords);
+
+            //draw polyline on map
+            map.MapElements.Add(mapPolyline);
+
+            return Coords;
+        }
+
         public async Task setViewOnMap(List<BasicGeoposition> positions, MapControl map)
         {
             if (positions.Count == 0)
