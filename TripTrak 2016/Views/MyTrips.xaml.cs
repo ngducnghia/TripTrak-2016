@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using TripTrak_2016.Helpers;
 using TripTrak_2016.Model;
+using TripTrak_2016.ViewModels;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -26,23 +27,20 @@ namespace TripTrak_2016.Views
     public sealed partial class MyTrips : Page
     {
         LocalDataStorage localData = new LocalDataStorage();
-        private ObservableCollection<Trip> allTrips = null;
+        public MyTripsViewModel ViewModel { get; set; }
         public MyTrips()
         {
             this.InitializeComponent();
+            this.ViewModel = new MyTripsViewModel();
             CreateTripButton.Click += CreateTripButton_Click;
             this.Loaded += MyTrips_Loaded;
         }
 
         private async void MyTrips_Loaded(object sender, RoutedEventArgs e)
         {
-            allTrips = await localData.GetAllTrip();
-
-            if(allTrips!=null && allTrips.Count>0)
-                foreach (Trip item in allTrips)
-                {
-                    MainText.Text = MainText.Text + item.Name + "; ";
-                }
+            var trips = await localData.GetAllTrip();
+            foreach (Trip trip in trips)
+                this.ViewModel.AllTrips.Add(trip);
         }
 
         private void CreateTripButton_Click(object sender, RoutedEventArgs e)

@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:loc="using:TripTrak_2016.Model"
     xmlns:maps="using:Windows.UI.Xaml.Controls.Maps"
-    xmlns:photoControl="using:TripTrak_2016.CustomControl"
+    xmlns:controls="using:TripTrak_2016.CustomControl"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
     <Page.Resources>
@@ -56,7 +56,7 @@
         </DataTemplate>
 
         <DataTemplate x:Key="ImageOverlayGalleryFolderDataTemplate">
-            <photoControl:SharedPhoto  DoubleTapped="SharedPhoto_DoubleTapped" DataContext="{Binding Photo}"/>
+            <controls:SharedPhoto  DoubleTapped="SharedPhoto_DoubleTapped" DataContext="{Binding Photo}"/>
         </DataTemplate>
         <Style x:Key="SliderStyleTripTrak" TargetType="Slider">
             <Setter Property="Background" Value="{ThemeResource SystemControlForegroundBaseMediumLowBrush}"/>
@@ -291,11 +291,13 @@
                 <Slider x:Name="CheckPointSlider" Grid.ColumnSpan="5" Grid.Row="3"
                         SmallChange="1" LargeChange="1"  Margin="12,0" MaxWidth="480"
                         TickFrequency="1" Style="{StaticResource SliderStyleTripTrak}"  />
-                <GridView x:Name="ImageGridView" ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                <GridView x:Name="ImageGridView" 
                           SelectedItem="{x:Bind ViewModel.SelectedLocation, Mode=TwoWay}"
-                          ScrollViewer.HorizontalScrollBarVisibility="Auto" 
                           Margin="10,0"
-                          ScrollViewer.VerticalScrollMode="Disabled" ScrollViewer.HorizontalScrollMode="Auto"
+                          ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                          ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                          ScrollViewer.VerticalScrollMode="Disabled" 
+                          ScrollViewer.HorizontalScrollMode="Auto"
                           Grid.Row="4" Grid.ColumnSpan="5"
                           ItemsSource="{x:Bind ViewModel.CheckedLocations}"
                           ItemContainerStyle="{StaticResource PinsGridViewItemStyle}"
