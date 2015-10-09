@@ -102,6 +102,7 @@
     </Compile>
     <Compile Include="Common\BooleanToContentConverter.cs" />
     <Compile Include="Common\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Common\ConstantString.cs" />
     <Compile Include="CustomControl\MyTripsItem.xaml.cs">
       <DependentUpon>MyTripsItem.xaml</DependentUpon>
     </Compile>

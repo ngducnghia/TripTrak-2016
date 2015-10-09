@@ -34,20 +34,38 @@ namespace TripTrak_2016.Views
             this.ViewModel = new MyTripsViewModel();
             CreateTripButton.Click += CreateTripButton_Click;
             this.Loaded += MyTrips_Loaded;
+
         }
 
         private async void MyTrips_Loaded(object sender, RoutedEventArgs e)
         {
             var trips = await localData.GetAllTrip();
-            trips.RemoveAt(0);
             foreach (Trip trip in trips)
-                this.ViewModel.AllTrips.Add(trip);
+            {
+                if (trip.Type == "On-going")
+                    this.ViewModel.OnGoingTrips.Add(trip);
+                if (trip.Type == "Completed")
+                    this.ViewModel.CompletedTrips.Add(trip);
+            }
         }
 
         private void CreateTripButton_Click(object sender, RoutedEventArgs e)
         {
             App.PageName = "Create new trip";
             this.Frame.Navigate(typeof(CreateTrip));
+        }
+
+        private async void MyTripsItem_EndTripClick(object sender, RoutedEventArgs e)
+        {
+            var tripItem = sender as Trip;
+
+            tripItem.EndPin = new LocationPin
+            {
+                Name = "endTrip"
+            };
+            tripItem.Type = "Completed";
+            await localData.EditTrip(tripItem);
+
         }
     }
 }

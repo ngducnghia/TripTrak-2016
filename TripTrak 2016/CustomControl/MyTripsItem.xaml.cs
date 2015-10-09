@@ -22,17 +22,27 @@ using Windows.UI.Xaml.Navigation;
 
 namespace TripTrak_2016.CustomControl
 {
-    public sealed partial class MyTripsItem : UserControl
+    public partial class MyTripsItem : UserControl
     {
         Trip tripItem = null;
         public HomeViewModel ViewModel { get; set; }
         LocalDataStorage localData = new LocalDataStorage();
         private ObservableCollection<LocationPin> allPins = new ObservableCollection<LocationPin>();
+        public event RoutedEventHandler EndTripClick;
+
         public MyTripsItem()
         {
             this.InitializeComponent();
             this.ViewModel = new HomeViewModel();
             this.Loaded += MyTripsItem_Loaded;
+            endTripBtn.Click += EndTripBtn_Click;
+        }
+
+        public void EndTripBtn_Click(object sender, RoutedEventArgs e)
+        {
+            //bubble the event up to the parent
+            if (this.EndTripClick != null)
+                this.EndTripClick(tripItem, e);
         }
 
         private async void MyTripsItem_Loaded(object sender, RoutedEventArgs e)

@@ -55,6 +55,8 @@ namespace TripTrak_2016.Model
             get { return this.type; }
             set { this.SetProperty(ref this.type, value); }
         }
+        [IgnoreDataMember]
+        public bool isOnGoingTrip => this.Type== "On-going" ? true : false;
 
         private string shareWith;
         public string ShareWith

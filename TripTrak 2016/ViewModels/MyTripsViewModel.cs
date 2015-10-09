@@ -16,17 +16,31 @@ namespace TripTrak_2016.ViewModels
         {
         }
 
-        private ObservableCollection<Trip> allTrips = new ObservableCollection<Trip>();
+        private ObservableCollection<Trip> onGoingTrips = new ObservableCollection<Trip>();
         /// <summary>
         /// Gets or sets the locations represented on the map; this is a superset of Locations, and 
         /// includes the current location and any locations being added but not yet saved. 
         /// </summary>
-        public ObservableCollection<Trip> AllTrips
+        public ObservableCollection<Trip> OnGoingTrips
         {
-            get { return this.allTrips; }
+            get { return this.onGoingTrips; }
             set
             {
-                this.SetProperty(ref this.allTrips, value);
+                this.SetProperty(ref this.onGoingTrips, value);
+            }
+        }
+
+        private ObservableCollection<Trip> completedTrips = new ObservableCollection<Trip>();
+        /// <summary>
+        /// Gets or sets the locations represented on the map; this is a superset of Locations, and 
+        /// includes the current location and any locations being added but not yet saved. 
+        /// </summary>
+        public ObservableCollection<Trip> CompletedTrips
+        {
+            get { return this.completedTrips; }
+            set
+            {
+                this.SetProperty(ref this.completedTrips, value);
             }
         }
 
