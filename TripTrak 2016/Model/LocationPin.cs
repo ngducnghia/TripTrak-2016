@@ -106,9 +106,12 @@ namespace TripTrak_2016.Model
         /// <summary>
         /// Gets a display-string representation of the DateCreated time. 
         /// </summary>
+        [IgnoreDataMember]
         public string FormattedDateCreatedTime =>
             new TimeSpan(this.DateCreated.Hour, this.DateCreated.Minute, 0).ToString("hh\\:mm");
 
+        [IgnoreDataMember]
+        public string newFormattedDateCreatedTime => this.DateCreated.ToString("MMMM dd, yyyy") + "* ";
 
         /// <summary>
         /// Gets a Geopoint representation of the current location for use with the map service APIs.

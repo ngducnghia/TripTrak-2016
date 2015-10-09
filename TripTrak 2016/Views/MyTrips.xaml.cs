@@ -39,6 +39,7 @@ namespace TripTrak_2016.Views
         private async void MyTrips_Loaded(object sender, RoutedEventArgs e)
         {
             var trips = await localData.GetAllTrip();
+            trips.RemoveAt(0);
             foreach (Trip trip in trips)
                 this.ViewModel.AllTrips.Add(trip);
         }

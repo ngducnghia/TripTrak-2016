@@ -156,7 +156,7 @@ namespace TripTrak_2016.Views
                 CheckPointSlider.Maximum = this.ViewModel.MileStoneLocations.Count() - 1;
 
                 // Set the current view of the map control. 
-                var positions = this.ViewModel.CheckedLocations.Select(loc => loc.Position).ToList();
+                var positions = this.ViewModel.PinnedLocations.Select(loc => loc.Position).ToList();
                 //if (currentLocation != null)
                 //    positions.Insert(0, currentLocation.Position);
                 await ViewModel.setViewOnMap(positions, this.InputMap);

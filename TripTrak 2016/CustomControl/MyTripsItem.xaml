@@ -39,7 +39,10 @@
                     FontFamily="Segoe MDL2 Assets" FontSize="20" />
         <StackPanel Grid.Row="0" Grid.Column="1">
             <TextBlock Text="{Binding Name}" Foreground="Black" FontSize="18"/>
-            <TextBlock Text="{Binding DateCreated}" Foreground="Gray" FontSize="14"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding StartPin.newFormattedDateCreatedTime}" Foreground="Gray" FontSize="12"/>
+                <TextBlock Text="{Binding StartPin.Address}" Foreground="Gray" FontSize="12"/>
+            </StackPanel>
         </StackPanel>
         <TextBlock Grid.Row="0" Grid.Column="2" FontFamily="Segoe MDL2 Assets" Text="&#xE011;" FontSize="20" Margin="5" VerticalAlignment="Center"/>
         <maps:MapControl x:Name="InputMap" Grid.Row="1" Grid.ColumnSpan="3" 
@@ -48,6 +51,7 @@
 
             <maps:MapItemsControl x:Name="mapItem" ItemsSource="{x:Bind ViewModel.CheckedLocations}" ItemTemplate="{StaticResource MyTripItemTemplate}"/>
         </maps:MapControl>
+        <Rectangle  Grid.Row="1" Grid.ColumnSpan="3" Height="150" Width="330" Fill="White" Opacity="0.1"/>
         <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Margin="0,0,40,0" Content="End Trip"/>
             <Button Content="&#xE76D;" FontFamily="Segoe MDL2 Assets" FontSize="24" 

@@ -62,9 +62,15 @@ namespace TripTrak_2016.Views
         {
             base.OnNavigatedTo(e);
             bool getPins = await GetPinsForGivenDate();
-            oldPin = this.ViewModel.CheckedLocations[0];
-            oldPin.IsSelected = true;
-            selectedImage.Source = await PhotoHelper.getImageSource(this.ViewModel.CheckedLocations[0].Photo.ImageName);
+            if (this.ViewModel.CheckedLocations.Count > 0)
+            {
+                oldPin = this.ViewModel.CheckedLocations[0];
+                oldPin.IsSelected = true;
+                selectedImage.Source = await PhotoHelper.getImageSource(this.ViewModel.CheckedLocations[0].Photo.ImageName);
+            }
+            else
+                oldPin = this.ViewModel.PinnedLocations[0];
+
             if (e.NavigationMode == NavigationMode.New)
             {
 
@@ -117,7 +123,7 @@ namespace TripTrak_2016.Views
                     ret = !ret;
 
                 // Set the current view of the map control. 
-                var positions = this.ViewModel.CheckedLocations.Select(loc => loc.Position).ToList();
+                var positions = this.ViewModel.PinnedLocations.Select(loc => loc.Position).ToList();
                 //if (currentLocation != null)
                 //    positions.Insert(0, currentLocation.Position);
                 await ViewModel.setViewOnMap(positions, this.InputMap);

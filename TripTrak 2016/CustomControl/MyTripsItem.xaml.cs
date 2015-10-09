@@ -38,36 +38,37 @@ namespace TripTrak_2016.CustomControl
         private async void MyTripsItem_Loaded(object sender, RoutedEventArgs e)
         {
             tripItem = ((MyTripsItem)sender).DataContext as Trip;
-            DateTime startTime = tripItem.StartPin.DateCreated.DateTime;
-            DateTime endTime = DateTime.Now;
-            bool result = await GetPinsForGivenDate(startTime, endTime);
-            //     var hasData = await GetPinsForGivenDate();
+            if (tripItem != null)
+            {
+                DateTime startTime = tripItem.StartPin.DateCreated.DateTime;
+                DateTime endTime = DateTime.Now;
+                if (tripItem.EndPin != null)
+                    endTime = tripItem.EndPin.DateCreated.DateTime;
+                bool result = await GetPinsForGivenDate(startTime, endTime);
+            }
         }
 
         private async Task<bool> GetPinsForGivenDate(DateTime startTime, DateTime endTime)
         {
             bool ret = false;
-
-                var pins = allPins.Concat(await localData.GetLocationPinsByDate(startTime));
-                allPins = new ObservableCollection<LocationPin>(pins);
-             //   startTime.Date.AddDays(1);
-
-            if (allPins != null && allPins.Count > 0)
+            while (startTime.Date.Date <= endTime.Date.Date)
             {
-                foreach (LocationPin pin in allPins)
+                var pins = await localData.GetLocationPinsByDate(startTime);
+                if (pins != null && pins.Count > 0)
                 {
-                    if (pin.IsCheckPoint)
+                    foreach (LocationPin pin in pins)
                     {
-                        this.ViewModel.CheckedLocations.Add(pin);
+                        if (pin.IsCheckPoint)
+                        {
+                            this.ViewModel.CheckedLocations.Add(pin);
+                        }
                     }
                 }
-                var numberOfPolylines = ViewModel.drawPolylines(allPins, this.InputMap);
-
-                //if (currentLocation != null)
-                //    positions.Insert(0, currentLocation.Position);
-                await ViewModel.setViewOnMap(numberOfPolylines, this.InputMap);
+                startTime = startTime.AddDays(1);
             }
 
+            var numberOfPolylines = ViewModel.drawPolylines(this.ViewModel.CheckedLocations, this.InputMap);
+            await ViewModel.setViewOnMap(numberOfPolylines, this.InputMap);
             return ret;
         }
     }

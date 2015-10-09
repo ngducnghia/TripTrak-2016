@@ -10,7 +10,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
     <Page.Resources>
-        <DataTemplate x:Key="MyTripsItemTemplate" x:DataType="loc:Trip">
+        <DataTemplate x:Key="MyTripsItemTemplate">
             <controls:MyTripsItem />
         </DataTemplate>
     </Page.Resources>
