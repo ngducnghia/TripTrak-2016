@@ -55,6 +55,10 @@ namespace TripTrak_2016.CustomControl
                 if (tripItem.EndPin != null)
                     endTime = tripItem.EndPin.DateCreated.DateTime;
                 bool result = await GetPinsForGivenDate(startTime, endTime);
+                if(string.IsNullOrEmpty(tripItem.StartPin.Name))
+                {
+                    await LocationHelper.TryUpdateMissingLocationInfoAsync(tripItem.StartPin, null);
+                }
             }
         }
 

@@ -163,8 +163,11 @@ namespace TripTrak_2016.Helpers
         {
             ObservableCollection<Trip> data = new ObservableCollection<Trip>();
             data = await GetAllTrip();
-            var tripItem = data.Select(t => t.Name == editedTrip.Name) as Trip;
-            data.Remove(tripItem);
+            var tripItem = data.First(t => t.Name == editedTrip.Name);
+            if (tripItem != null)
+                data.Remove(tripItem as Trip);
+            else
+                return;
             data.Add(editedTrip);
             await SaveAllTrips(data);
         }

@@ -49,22 +49,31 @@ namespace TripTrak_2016.Views
             }
         }
 
-        private void CreateTripButton_Click(object sender, RoutedEventArgs e)
+        private async void CreateTripButton_Click(object sender, RoutedEventArgs e)
         {
-            App.PageName = "Create new trip";
-            this.Frame.Navigate(typeof(CreateTrip));
+            await localData.EditTrip(null);
+            //App.PageName = "Start Trip";
+            //this.Frame.Navigate(typeof(CreateTrip));
         }
 
-        private async void MyTripsItem_EndTripClick(object sender, RoutedEventArgs e)
+        private void MyTripsItem_EndTripClick(object sender, RoutedEventArgs e)
         {
-            var tripItem = sender as Trip;
-
-            tripItem.EndPin = new LocationPin
+            if (!App.PageName.Equals("End Trip"))
             {
-                Name = "endTrip"
-            };
-            tripItem.Type = "Completed";
-            await localData.EditTrip(tripItem);
+                App.PageName = "End Trip";
+                this.Frame.Navigate(typeof(CreateTrip), sender);
+            }
+
+            //var tripItem = sender as Trip;
+
+            //tripItem.EndPin = new LocationPin
+            //{
+            //    Name = "endTrip"
+            //};
+            //tripItem.Type = "Completed";
+            //await localData.EditTrip(tripItem);
+            //ViewModel.CompletedTrips.Add(tripItem);
+            //ViewModel.OnGoingTrips.Remove(tripItem);
 
         }
     }

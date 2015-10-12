@@ -325,6 +325,7 @@ namespace TripTrak_2016.Views
                         this.ViewModel.CheckedLocations.Remove(currentLoc);
                 }
                 this.InputMap.Center = new Geopoint(currentLocation.Position);
+                this.InputMap.ZoomLevel = 15;
                 this.ViewModel.PinDisplayInformation = new LocationPin { Position = currentLocation.Position, IsCurrentLocation = true };
                 this.ViewModel.CheckedLocations.Add(new LocationPin { Position = currentLocation.Position, IsCurrentLocation = true });
                 await LocationHelper.TryUpdateMissingLocationInfoAsync(this.ViewModel.PinDisplayInformation, null);

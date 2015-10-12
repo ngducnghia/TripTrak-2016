@@ -30,26 +30,36 @@ namespace TripTrak_2016.Views
         public HomeViewModel ViewModel { get; set; }
         LocalDataStorage localData = new LocalDataStorage();
         private ObservableCollection<LocationPin> allPins = null;
+        Trip tripItem = null;
         LocationPin oldPin;
         public CreateTrip()
         {
             this.InitializeComponent();
             this.ViewModel = new HomeViewModel();
             HistoryDatePicker.DateChanged += HistoryDatePicker_DateChanged;
-            createButton.Click += CreateButton_Click;
+            submitButton.Click += submitButton_Click;
         }
 
-        private async void CreateButton_Click(object sender, RoutedEventArgs e)
+        private async void submitButton_Click(object sender, RoutedEventArgs e)
         {
-            var item = new Trip
+            if (App.PageName.Equals("Start Trip"))
             {
-                Name = NameTb.Text,
-                Description = DescTb.Text,
-                ShareWith = shareTb.Text,
-                Type = "On-going",
-                StartPin = oldPin
-            };
-            await localData.CreateNewTrip(item);
+                var item = new Trip
+                {
+                    Name = NameTb.Text,
+                    Description = DescTb.Text,
+                    ShareWith = shareTb.Text,
+                    Type = "On-going",
+                    StartPin = oldPin
+                };
+                await localData.CreateNewTrip(item);
+            }
+            else if (App.PageName.Equals("End Trip"))
+            {
+                tripItem.EndPin = oldPin;
+                tripItem.Type = "Completed";
+                await localData.EditTrip(tripItem);
+            }
             this.Frame.GoBack();
         }
 
@@ -61,15 +71,37 @@ namespace TripTrak_2016.Views
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            bool getPins = await GetPinsForGivenDate();
-            if (this.ViewModel.CheckedLocations.Count > 0)
+            if (App.PageName.Equals("Start Trip"))
             {
-                oldPin = this.ViewModel.CheckedLocations[0];
-                oldPin.IsSelected = true;
-                selectedImage.Source = await PhotoHelper.getImageSource(this.ViewModel.CheckedLocations[0].Photo.ImageName);
+                bool getPins = await GetPinsForGivenDate();
+                if (this.ViewModel.CheckedLocations.Count > 0)
+                {
+                    oldPin = this.ViewModel.CheckedLocations[0];
+                    oldPin.IsSelected = true;
+                    selectedImage.Source = await PhotoHelper.getImageSource(this.ViewModel.CheckedLocations[0].Photo.ImageName);
+                }
+                else
+                    oldPin = this.ViewModel.PinnedLocations[0];
             }
-            else
-                oldPin = this.ViewModel.PinnedLocations[0];
+            else if (App.PageName.Equals("End Trip"))
+            {
+                tripItem = e.Parameter as Trip;
+                NameTb.Text = tripItem.Name;
+                shareTb.Text = tripItem.ShareWith;
+                DescTb.Text = tripItem.Description;
+                startDateTb.Text = "End Date";
+                startPointTb.Text = "End Point";
+
+                bool getPins = await GetPinsForGivenDate();
+                if (this.ViewModel.CheckedLocations.Count > 0)
+                {
+                    oldPin = this.ViewModel.CheckedLocations[this.ViewModel.CheckedLocations.Count - 1];
+                    oldPin.IsSelected = true;
+                    selectedImage.Source = await PhotoHelper.getImageSource(this.ViewModel.CheckedLocations[this.ViewModel.CheckedLocations.Count - 1].Photo.ImageName);
+                }
+                else
+                    oldPin = this.ViewModel.PinnedLocations[0];
+            }
 
             if (e.NavigationMode == NavigationMode.New)
             {
