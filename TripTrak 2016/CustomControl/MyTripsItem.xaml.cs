@@ -29,6 +29,7 @@ namespace TripTrak_2016.CustomControl
         LocalDataStorage localData = new LocalDataStorage();
         private ObservableCollection<LocationPin> allPins = new ObservableCollection<LocationPin>();
         public event RoutedEventHandler EndTripClick;
+        public event RoutedEventHandler DelTripClick;
 
         public MyTripsItem()
         {
@@ -36,6 +37,7 @@ namespace TripTrak_2016.CustomControl
             this.ViewModel = new HomeViewModel();
             this.Loaded += MyTripsItem_Loaded;
             endTripBtn.Click += EndTripBtn_Click;
+            delTripBtn.Click += DelTripBtn_Click;
         }
 
         public void EndTripBtn_Click(object sender, RoutedEventArgs e)
@@ -43,6 +45,13 @@ namespace TripTrak_2016.CustomControl
             //bubble the event up to the parent
             if (this.EndTripClick != null)
                 this.EndTripClick(tripItem, e);
+        }
+
+        public void DelTripBtn_Click(object sender, RoutedEventArgs e)
+        {
+            //bubble the event up to the parent
+            if (this.DelTripClick != null)
+                this.DelTripClick(tripItem, e);
         }
 
         private async void MyTripsItem_Loaded(object sender, RoutedEventArgs e)
@@ -55,7 +64,7 @@ namespace TripTrak_2016.CustomControl
                 if (tripItem.EndPin != null)
                     endTime = tripItem.EndPin.DateCreated.DateTime;
                 bool result = await GetPinsForGivenDate(startTime, endTime);
-                if(string.IsNullOrEmpty(tripItem.StartPin.Name))
+                if (string.IsNullOrEmpty(tripItem.StartPin.Name))
                 {
                     await LocationHelper.TryUpdateMissingLocationInfoAsync(tripItem.StartPin, null);
                 }
@@ -80,9 +89,11 @@ namespace TripTrak_2016.CustomControl
                 }
                 startTime = startTime.AddDays(1);
             }
-
-            var numberOfPolylines = ViewModel.drawPolylines(this.ViewModel.CheckedLocations, this.InputMap);
-            await ViewModel.setViewOnMap(numberOfPolylines, this.InputMap);
+            if (this.ViewModel.CheckedLocations.Count() > 0)
+            {
+                var numberOfPolylines = ViewModel.drawPolylines(this.ViewModel.CheckedLocations, this.InputMap);
+                await ViewModel.setViewOnMap(numberOfPolylines, this.InputMap);
+            }
             return ret;
         }
     }

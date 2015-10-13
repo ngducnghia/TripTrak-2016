@@ -11,7 +11,7 @@
     mc:Ignorable="d">
     <Page.Resources>
         <DataTemplate x:Key="MyTripsItemTemplate">
-            <controls:MyTripsItem EndTripClick="MyTripsItem_EndTripClick"/>
+            <controls:MyTripsItem EndTripClick="MyTripsItem_EndTripClick" DelTripClick="MyTripsItem_DelTripClick"/>
         </DataTemplate>
         <Style x:Key="PivotStyleMyTrip" TargetType="Pivot">
             <Setter Property="Margin" Value="0"/>

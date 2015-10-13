@@ -125,7 +125,7 @@ namespace TripTrak_2016.Helpers
             }
             catch (FileNotFoundException)
             {
-                return null;
+                return new ObservableCollection<Trip>();
             }
             return data;
         }
@@ -169,6 +169,22 @@ namespace TripTrak_2016.Helpers
             else
                 return;
             data.Add(editedTrip);
+            await SaveAllTrips(data);
+        }
+
+        /// <summary>
+        /// Delete trip and save to roaming storage. 
+        /// </summary>
+        /// <param name="editedTrip">trip  to save.</param>
+        public async Task DeleteTrip(Trip deleteTrip)
+        {
+            ObservableCollection<Trip> data = new ObservableCollection<Trip>();
+            data = await GetAllTrip();
+            var tripItem = data.First(t => t.Name == deleteTrip.Name);
+            if (tripItem != null)
+                data.Remove(tripItem as Trip);
+            else
+                return;
             await SaveAllTrips(data);
         }
 

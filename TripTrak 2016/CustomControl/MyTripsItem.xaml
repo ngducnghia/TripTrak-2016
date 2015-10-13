@@ -54,7 +54,9 @@
         <Rectangle  Grid.Row="1" Grid.ColumnSpan="3" Height="150" Width="330" Fill="White" Opacity="0.1"/>
         <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button x:Name="endTripBtn"  Visibility="{Binding isOnGoingTrip, Converter={StaticResource BooleanToVisibilityConverter}}"
-                    Margin="0,0,30,0" Content="End Trip" Click="EndTripBtn_Click"/>
+                    Margin="0,0,30,0" Content="End Trip"/>
+            <Button x:Name="delTripBtn"  Visibility="{Binding isOnGoingTrip, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Reverse}"
+                    Margin="0,0,30,0" Content="End Trip"/>
             <Button Content="&#xE76D;" FontFamily="Segoe MDL2 Assets" FontSize="24" 
                     Style="{StaticResource RoundButton}" Padding="5" Margin="7,0" Foreground="White" Background="Gray"/>
             <Button Content="&#xE00B;" FontFamily="Segoe MDL2 Assets" FontSize="24" 

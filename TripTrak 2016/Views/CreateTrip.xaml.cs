@@ -38,6 +38,12 @@ namespace TripTrak_2016.Views
             this.ViewModel = new HomeViewModel();
             HistoryDatePicker.DateChanged += HistoryDatePicker_DateChanged;
             submitButton.Click += submitButton_Click;
+            cancelButton.Click += CancelButton_Click;
+        }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Frame.GoBack();
         }
 
         private async void submitButton_Click(object sender, RoutedEventArgs e)
@@ -91,7 +97,7 @@ namespace TripTrak_2016.Views
                 DescTb.Text = tripItem.Description;
                 startDateTb.Text = "End Date";
                 startPointTb.Text = "End Point";
-
+                submitButton.Content = "End Trip";
                 bool getPins = await GetPinsForGivenDate();
                 if (this.ViewModel.CheckedLocations.Count > 0)
                 {
@@ -125,6 +131,29 @@ namespace TripTrak_2016.Views
             HistoryDatePicker.Opacity = 0.5;
 
             var hasData = await GetPinsForGivenDate();
+
+            if (App.PageName.Equals("Start Trip"))
+            {
+                if (this.ViewModel.CheckedLocations.Count > 0)
+                {
+                    oldPin = this.ViewModel.CheckedLocations[0];
+                    oldPin.IsSelected = true;
+                    selectedImage.Source = await PhotoHelper.getImageSource(this.ViewModel.CheckedLocations[0].Photo.ImageName);
+                }
+                else
+                    oldPin = this.ViewModel.PinnedLocations[0];
+            }
+            else if (App.PageName.Equals("End Trip"))
+            {
+                if (this.ViewModel.CheckedLocations.Count > 0)
+                {
+                    oldPin = this.ViewModel.CheckedLocations[this.ViewModel.CheckedLocations.Count - 1];
+                    oldPin.IsSelected = true;
+                    selectedImage.Source = await PhotoHelper.getImageSource(this.ViewModel.CheckedLocations[this.ViewModel.CheckedLocations.Count - 1].Photo.ImageName);
+                }
+                else
+                    oldPin = this.ViewModel.PinnedLocations[this.ViewModel.PinnedLocations.Count - 1];
+            }
 
             HistoryDatePicker.IsHitTestVisible = true;
             HistoryDatePicker.Opacity = 1;

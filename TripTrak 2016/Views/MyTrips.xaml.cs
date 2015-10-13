@@ -49,11 +49,10 @@ namespace TripTrak_2016.Views
             }
         }
 
-        private async void CreateTripButton_Click(object sender, RoutedEventArgs e)
+        private void CreateTripButton_Click(object sender, RoutedEventArgs e)
         {
-            await localData.EditTrip(null);
-            //App.PageName = "Start Trip";
-            //this.Frame.Navigate(typeof(CreateTrip));
+            App.PageName = "Start Trip";
+            this.Frame.Navigate(typeof(CreateTrip));
         }
 
         private void MyTripsItem_EndTripClick(object sender, RoutedEventArgs e)
@@ -63,18 +62,13 @@ namespace TripTrak_2016.Views
                 App.PageName = "End Trip";
                 this.Frame.Navigate(typeof(CreateTrip), sender);
             }
+        }
 
-            //var tripItem = sender as Trip;
-
-            //tripItem.EndPin = new LocationPin
-            //{
-            //    Name = "endTrip"
-            //};
-            //tripItem.Type = "Completed";
-            //await localData.EditTrip(tripItem);
-            //ViewModel.CompletedTrips.Add(tripItem);
-            //ViewModel.OnGoingTrips.Remove(tripItem);
-
+        private async void MyTripsItem_DelTripClick(object sender, RoutedEventArgs e)
+        {
+            var tripItem = sender as Trip;
+            ViewModel.CompletedTrips.Remove(tripItem);
+            await localData.DeleteTrip(tripItem);
         }
     }
 }
