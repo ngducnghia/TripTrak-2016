@@ -223,13 +223,13 @@
     <Grid Background="LightGray">
         <Pivot Style="{StaticResource PivotStyleMyTrip}">
             <PivotItem Header="OnGoing">
-                <ListView x:Name="OnGoingTripGridView" 
+                <ListView x:Name="OnGoingTripGridView" SelectionChanged="List_SelectionChanged"
                           ItemsSource="{x:Bind ViewModel.OnGoingTrips}"
                           ItemTemplate="{StaticResource MyTripsItemTemplate}" >
                 </ListView>
             </PivotItem>
             <PivotItem  Header="Completed">
-                <ListView x:Name="CompletedTripGridView" 
+                <ListView x:Name="CompletedTripGridView"  SelectionChanged="List_SelectionChanged"
                           ItemsSource="{x:Bind ViewModel.CompletedTrips}"
                           ItemTemplate="{StaticResource MyTripsItemTemplate}" >
                 </ListView>

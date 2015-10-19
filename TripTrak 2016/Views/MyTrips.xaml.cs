@@ -36,7 +36,10 @@ namespace TripTrak_2016.Views
             this.Loaded += MyTrips_Loaded;
 
         }
-
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+        }
         private async void MyTrips_Loaded(object sender, RoutedEventArgs e)
         {
             var trips = await localData.GetAllTrip();
@@ -69,6 +72,15 @@ namespace TripTrak_2016.Views
             var tripItem = sender as Trip;
             ViewModel.CompletedTrips.Remove(tripItem);
             await localData.DeleteTrip(tripItem);
+        }
+
+        private void List_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+            var list = sender as ListView;
+            var tripItem = list.SelectedItem as Trip;
+            App.PageName = tripItem.Name;
+            this.Frame.Navigate(typeof(Home), tripItem);
         }
     }
 }

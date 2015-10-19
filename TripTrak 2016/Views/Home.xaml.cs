@@ -85,7 +85,7 @@ namespace TripTrak_2016.Views
 
                 //update location info (address) of the selected Pin
                 await LocationHelper.TryUpdateMissingLocationInfoAsync(this.ViewModel.PinDisplayInformation, null);
-               ViewModel.drawPolylines(this.ViewModel.PinDisplayInformation, false, this.InputMap);
+                ViewModel.drawPolylines(this.ViewModel.PinDisplayInformation, false, this.InputMap);
 
 
                 //update route and time to destination
@@ -164,7 +164,14 @@ namespace TripTrak_2016.Views
             return ret;
         }
 
-
+        protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+        {
+            base.OnNavigatingFrom(e);
+            if (e.NavigationMode == NavigationMode.Back && App.PageName != "TripTrak")
+            {
+                App.PageName = "My Trips";
+            }
+        }
 
         /// <summary>
         /// Loads the saved location data on first navigation, and 
@@ -174,6 +181,16 @@ namespace TripTrak_2016.Views
         {
             base.OnNavigatedTo(e);
 
+            if (App.PageName != "TripTrak")
+            {
+                var tripItem = e.Parameter as Trip;
+                HistoryDatePicker.Date = tripItem.StartPin.DateCreated;
+                HistoryDatePicker.MaxYear = tripItem.DateCreated;
+            }
+            else
+            {
+                LocationHelper.Geolocator.StatusChanged += Geolocator_StatusChanged;
+            }
             bool getPins = await GetPinsForGivenDate();
             if (e.NavigationMode == NavigationMode.New)
             {
@@ -181,7 +198,7 @@ namespace TripTrak_2016.Views
             }
             // Start handling Geolocator and network status changes after loading the data 
             // so that the view doesn't get refreshed before there is something to show.
-            LocationHelper.Geolocator.StatusChanged += Geolocator_StatusChanged;
+           
             NetworkInformation.NetworkStatusChanged += NetworkInformation_NetworkStatusChanged;
             LocationHelper.Geolocator.PositionChanged += Geolocator_PositionChanged;
             StartLocationExtensionSession();
@@ -415,7 +432,7 @@ namespace TripTrak_2016.Views
             }
         }
 
-      
+
 
         private async void SharedPhoto_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
@@ -460,7 +477,8 @@ namespace TripTrak_2016.Views
 
         private void checkedPinBtn_Click(object sender, RoutedEventArgs e)
         {
-            LocationPin btnPin = ((Button)sender).DataContext as LocationPin;
+            Button btn = (Button)sender;
+            LocationPin btnPin = btn.DataContext as LocationPin;
 
             //move the slider, photo list along
             ImageGridView.SelectedIndex = this.ViewModel.CheckedLocations.IndexOf(btnPin);
