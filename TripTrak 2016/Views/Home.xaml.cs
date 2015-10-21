@@ -409,6 +409,13 @@ namespace TripTrak_2016.Views
                     radioButton.IsChecked = false;
                     MainButton.Flyout.Hide();
                     break;
+                case "Maps":
+                    ViewOptionButton.Flyout.Hide();
+                    break;
+                case "Photos":
+                    ViewOptionButton.Flyout.Hide();
+                    break;
+
                 default:
                     break;
             }

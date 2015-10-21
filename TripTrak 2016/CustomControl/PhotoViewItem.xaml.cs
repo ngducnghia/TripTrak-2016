@@ -21,22 +21,22 @@ namespace TripTrak_2016.CustomControl
 {
     public sealed partial class PhotoViewItem : UserControl
     {
-        LocationPin pinPhoto = null;
         public PhotoViewItem()
         {
             this.InitializeComponent();
-            this.Loaded += PhotoViewItem_Loaded;
+            PhotoNameTb.DataContextChanged += PhotoNameTb_DataContextChanged;
         }
 
-        private async void PhotoViewItem_Loaded(object sender, RoutedEventArgs e)
+        private void PhotoNameTb_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {
-            pinPhoto = ((PhotoViewItem)sender).DataContext as LocationPin;
-            if (pinPhoto != null && pinPhoto.Photo!=null)
-            {
-                var source = await PhotoHelper.getImageSource(pinPhoto.Photo.ImageName);
-                if (source != null)
-                    PhotoImg.Source = source;
-            }
+            loadPhoto();
+        }
+
+        async void loadPhoto()
+        {
+            var source = await PhotoHelper.getImageSource(PhotoNameTb.Text);
+            if (source != null)
+                PhotoImg.Source = source;
         }
     }
 }

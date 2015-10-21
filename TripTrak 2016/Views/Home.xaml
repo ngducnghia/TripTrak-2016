@@ -342,12 +342,12 @@
                         <StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <!-- My Trips button -->
-                                <RadioButton  Width="80"  Tag="&#xE12B;" Click="RadioButton_Click" IsChecked="True"
+                                <RadioButton  Width="80"  Tag="&#xE12B;" Click="RadioButton_Click" IsChecked="False"
                                              Content="Road" Style="{StaticResource SplitViewNavButtonStyle}" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <!-- My Trips button -->
-                                <RadioButton Width="80" Tag="&#xE128;" Click="RadioButton_Click" 
+                                <RadioButton Width="80" Tag="&#xE128;" Click="RadioButton_Click" IsChecked="True"
                                              Content="Arial" Style="{StaticResource SplitViewNavButtonStyle}" />
                             </StackPanel>
 
@@ -366,12 +366,14 @@
                         <StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <!-- My Trips button -->
-                                <RadioButton x:Name="isMapChecked"  Width="80"  Tag="&#xE707;" IsChecked="True"
+                                <RadioButton x:Name="isMapChecked"  Click="RadioButton_Click"
+                                             Width="80"  Tag="&#xE707;" IsChecked="True"
                                              Content="Maps" Style="{StaticResource SplitViewNavButtonStyle}" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <!-- My Trips button -->
-                                <RadioButton x:Name="isPhotoChecked"  Width="80" Tag="&#xE8A9;"
+                                <RadioButton x:Name="isPhotoChecked"  Click="RadioButton_Click"
+                                             Width="80" Tag="&#xE8A9;"
                                              Content="Photos" Style="{StaticResource SplitViewNavButtonStyle}" />
                             </StackPanel>
 
