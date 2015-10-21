@@ -14,7 +14,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <SplitView x:Name="ShellSplitView" OpenPaneLength="300"
-                   IsPaneOpen="False" Grid.Column="1" DisplayMode="Overlay" Grid.Row="1"
+                   IsPaneOpen="False" DisplayMode="Overlay" Grid.Row="1"
                    PaneBackground="{ThemeResource SplitViewBackgroundBrush}">
             <SplitView.Pane>
                 <StackPanel>

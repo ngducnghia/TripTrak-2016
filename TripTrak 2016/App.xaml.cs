@@ -29,7 +29,6 @@ namespace TripTrak_2016
     sealed partial class App : Application
     {
         public static LocationPin currentLocation = new LocationPin();
-        public static bool isSimpleMap = false;
         public static string PageName = "TripTrak";
         private Frame _rootFrame;
         /// <summary>

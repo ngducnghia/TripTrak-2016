@@ -32,10 +32,11 @@ namespace TripTrak_2016.Helpers
             }
             try
             {
+                const uint size = 100;
                 StorageFile sourcePhoto = await KnownFolders.CameraRoll.GetFileAsync(imageName);
                 if (sourcePhoto != null)
                 {
-                    var fileStream = await sourcePhoto.GetThumbnailAsync(ThumbnailMode.PicturesView);
+                    var fileStream = await sourcePhoto.GetThumbnailAsync(ThumbnailMode.VideosView,size, ThumbnailOptions.ResizeThumbnail);
                     sourcePhoto = null;
                     var img = new BitmapImage();
                     img.SetSource(fileStream);

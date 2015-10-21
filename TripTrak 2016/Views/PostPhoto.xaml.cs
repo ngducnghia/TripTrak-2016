@@ -63,7 +63,7 @@ namespace TripTrak_2016.Views
                 DateCreated = App.currentLocation.DateCreated
             };
             await localData.InsertLocationDataAsync(item);
-            App.isSimpleMap = false;
+            App.PageName = "TripTrak";
             this.Frame.GoBack();
         }
 

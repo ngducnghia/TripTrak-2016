@@ -35,6 +35,7 @@ namespace TripTrak_2016
         private void Frame_Navigated(object sender, NavigationEventArgs e)
         {
             PageTitleTbl.Text = App.PageName;
+            Type pageName = e.SourcePageType;
         }
 
         private void InitSettings()

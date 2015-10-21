@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TripTrak_2016.Model;
 using Windows.Devices.Geolocation;
+using Windows.Services.Maps;
 using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -22,7 +23,7 @@ namespace TripTrak_2016.ViewModels
             set { this.SetProperty(ref this.pinDisplayInformation, value); }
         }
 
-        private ObservableCollection<LocationPin> pinnedLocations= new ObservableCollection<LocationPin>();
+        private ObservableCollection<LocationPin> pinnedLocations = new ObservableCollection<LocationPin>();
         /// <summary>
         /// Gets or sets the locations represented on the map; this is a superset of Locations, and 
         /// includes the current location and any locations being added but not yet saved. 
@@ -97,7 +98,7 @@ namespace TripTrak_2016.ViewModels
             }
         }
 
-        public int drawPolylines(LocationPin breakColorPin, bool isAddMilestone, MapControl map)
+        public  int drawPolylines(LocationPin breakColorPin, bool isAddMilestone, MapControl map)
         {
             int ret = 0;
             //remove all current polylines on map
@@ -171,7 +172,6 @@ namespace TripTrak_2016.ViewModels
                 map.MapElements.Add(lastPolyline);
                 ret++;
             }
-
             return ret;
         }
 
@@ -189,12 +189,14 @@ namespace TripTrak_2016.ViewModels
             {
                 Coords.Add(simpleGeoInDateOrder[i].Position);
             }
+
             //define polyline
             MapPolyline mapPolyline = new MapPolyline();
             mapPolyline.StrokeColor = color;
             mapPolyline.StrokeThickness = thickness;
             mapPolyline.StrokeDashed = true;
             mapPolyline.Path = new Geopath(Coords);
+
 
             //draw polyline on map
             map.MapElements.Add(mapPolyline);

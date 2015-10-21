@@ -15,7 +15,9 @@
             <Setter Property="MinHeight" Value="0" />
             <Setter Property="Padding" Value="0 0 0 0" />
         </Style>
-
+        <DataTemplate x:Key="MyTripsItemTemplate">
+            <controls:PhotoViewItem/>
+        </DataTemplate>
         <DataTemplate x:Key="InputMapItemTemplate" x:DataType="loc:LocationPin">
             <Grid>
                 <TextBlock Text="&#xEB49;" Foreground="Blue" FontFamily="Segoe MDL2 Assets" FontSize="32" 
@@ -202,96 +204,97 @@
     </Page.Resources>
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
-
-        <Grid Grid.RowSpan="3" Grid.ColumnSpan="3">
+        <Grid  Visibility="{Binding ElementName=isMapChecked, Path=IsChecked, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <maps:MapControl x:Name="InputMap" Grid.RowSpan="2"
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.RowSpan="3" Grid.ColumnSpan="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <maps:MapControl x:Name="InputMap" Grid.RowSpan="2"
                          LandmarksVisible="True" 
                          BusinessLandmarksVisible="True" 
                          ZoomInteractionMode="GestureAndControl"
             MapServiceToken="0KEyuXXhxVaOAIXwgvLA~doIeC1quhF2yDcbmlTYc6Q~AqLMibILNUu-ftoKwCf3whcS97LHNcNfVxjhwPQUQiMtbTSuQJHkbZeYm-z-05UY">
 
-                <maps:MapItemsControl  ItemsSource="{x:Bind ViewModel.CheckedLocations}" ItemTemplate="{StaticResource InputMapItemTemplate}"/>
-            </maps:MapControl>
-            <StackPanel Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Right">
-                <Button x:Name="MainButton" 
+                    <maps:MapItemsControl  ItemsSource="{x:Bind ViewModel.CheckedLocations}" ItemTemplate="{StaticResource InputMapItemTemplate}"/>
+                </maps:MapControl>
+                <StackPanel Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+                    <Button x:Name="MainButton" 
                     ToolTipService.ToolTip="current location" Content="&#xE1C4;" 
                     Style="{StaticResource RoundButton}" Padding="15" Foreground="White" Background="CornflowerBlue"
                     FontFamily="Segoe MDL2 Assets" FontSize="28" Margin="10">
-                    <Button.Flyout>
-                        <Flyout>
-                            <StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <!-- My Trips button -->
-                                    <RadioButton Width="150" Tag="&#xE114;" 
+                        <Button.Flyout>
+                            <Flyout>
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <!-- My Trips button -->
+                                        <RadioButton Width="150" Tag="&#xE114;" 
                                              Content="Take Photo" Style="{StaticResource SplitViewNavButtonStyle}" Click="RadioButton_Click" />
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <!-- My Trips button -->
-                                    <RadioButton  Width="150"  Tag="&#xE1D3;"
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <!-- My Trips button -->
+                                        <RadioButton  Width="150"  Tag="&#xE1D3;"
                                              Content="Photo Libs" Style="{StaticResource SplitViewNavButtonStyle}" Click="RadioButton_Click" />
+                                    </StackPanel>
                                 </StackPanel>
-                            </StackPanel>
-                        </Flyout>
-                    </Button.Flyout>
-                </Button>
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
 
-            </StackPanel>
+                </StackPanel>
 
 
-            <Grid Grid.Row="1" Background="White" x:Name="displayInfoGrid" >
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="20"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="30"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="25"/>
-                    <ColumnDefinition Width="65"/>
-                </Grid.ColumnDefinitions>
+                <Grid Grid.Row="1" Background="White" x:Name="displayInfoGrid" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="30"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="25"/>
+                        <ColumnDefinition Width="65"/>
+                    </Grid.ColumnDefinitions>
 
-                <TextBlock Text="&#xEB49;" Grid.Column="0" Grid.Row="0" Margin="5"  FontFamily="Segoe MDL2 Assets" FontSize="14" />
-                <TextBlock Name="addressTbl" Tapped="addressTbl_Tapped" Grid.Row="0" Grid.Column="1"  Text="{x:Bind ViewModel.PinDisplayInformation.Address, Mode=OneWay, TargetNullValue=''}" FontSize="12" VerticalAlignment="Center"/>
-                <TextBlock Name="LatLonTbl" Tapped="addressTbl_Tapped" Grid.Column="1" Grid.Row="1"  Text="{x:Bind ViewModel.PinDisplayInformation.FormattedLatLon, Mode=OneWay, TargetNullValue=''}" FontSize="12"/>
+                    <TextBlock Text="&#xEB49;" Grid.Column="0" Grid.Row="0" Margin="5"  FontFamily="Segoe MDL2 Assets" FontSize="14" />
+                    <TextBlock Name="addressTbl" Tapped="addressTbl_Tapped" Grid.Row="0" Grid.Column="1"  Text="{x:Bind ViewModel.PinDisplayInformation.Address, Mode=OneWay, TargetNullValue=''}" FontSize="12" VerticalAlignment="Center"/>
+                    <TextBlock Name="LatLonTbl" Tapped="addressTbl_Tapped" Grid.Column="1" Grid.Row="1"  Text="{x:Bind ViewModel.PinDisplayInformation.FormattedLatLon, Mode=OneWay, TargetNullValue=''}" FontSize="12"/>
 
-                <TextBlock Text="&#xE1CF;" Grid.Column="2" Grid.Row="0" Margin="5" FontFamily="Segoe MDL2 Assets" FontSize="14"/>
-                <TextBlock  Grid.Column="3" Grid.Row="0"   VerticalAlignment="Center"
+                    <TextBlock Text="&#xE1CF;" Grid.Column="2" Grid.Row="0" Margin="5" FontFamily="Segoe MDL2 Assets" FontSize="14"/>
+                    <TextBlock  Grid.Column="3" Grid.Row="0"   VerticalAlignment="Center"
                             Text="{x:Bind ViewModel.PinDisplayInformation.Name, Mode=OneWay, TargetNullValue=''}"
                            Foreground="CornflowerBlue" Margin="0,0" FontSize="12"/>
-                <TextBlock Text="&#xE121;" Grid.Column="2" 
+                    <TextBlock Text="&#xE121;" Grid.Column="2" 
                            Grid.Row="1" Margin="5"  
                             FontFamily="Segoe MDL2 Assets" FontSize="14"/>
-                <TextBlock  Grid.Column="3" Grid.Row="1"  VerticalAlignment="Center"
+                    <TextBlock  Grid.Column="3" Grid.Row="1"  VerticalAlignment="Center"
                             Text="{x:Bind ViewModel.PinDisplayInformation.FormattedDateCreatedTime, Mode=OneWay, TargetNullValue=''}"
                            Foreground="CornflowerBlue"  FontSize="12"/>
-                <TextBlock Text="&#xEA8C;" Grid.Column="0" Grid.Row="2" Margin="9,0,5,0" 
+                    <TextBlock Text="&#xEA8C;" Grid.Column="0" Grid.Row="2" Margin="9,0,5,0" 
                            Foreground="Black" FontFamily="Segoe MDL2 Assets" FontSize="12"/>
-                <Grid Grid.Column="1" Grid.Row="2">
-                    <TextBlock x:Name="ShareWithTb" HorizontalAlignment="Left" Text="{x:Bind ViewModel.PinDisplayInformation.Photo.ShareWith, Mode=OneWay, TargetNullValue=''}" TextTrimming="CharacterEllipsis"
+                    <Grid Grid.Column="1" Grid.Row="2">
+                        <TextBlock x:Name="ShareWithTb" HorizontalAlignment="Left" Text="{x:Bind ViewModel.PinDisplayInformation.Photo.ShareWith, Mode=OneWay, TargetNullValue=''}" TextTrimming="CharacterEllipsis"
                            Foreground="CornflowerBlue" Width="Auto" Margin="0,0" FontSize="12" Height="Auto"/>
-                </Grid>
-                <Slider x:Name="CheckPointSlider" Grid.ColumnSpan="5" Grid.Row="3"
+                    </Grid>
+                    <Slider x:Name="CheckPointSlider" Grid.ColumnSpan="5" Grid.Row="3"
                         SmallChange="1" LargeChange="1"  Margin="12,0" MaxWidth="480"
                         TickFrequency="1" Style="{StaticResource SliderStyleTripTrak}"  />
-                <GridView x:Name="ImageGridView" 
+                    <GridView x:Name="ImageGridView" 
                           SelectedItem="{x:Bind ViewModel.SelectedLocation, Mode=TwoWay}"
                           Margin="10,0"
                           ScrollViewer.VerticalScrollBarVisibility="Disabled"
@@ -302,27 +305,35 @@
                           ItemsSource="{x:Bind ViewModel.CheckedLocations}"
                           ItemContainerStyle="{StaticResource PinsGridViewItemStyle}"
                           ItemTemplate="{StaticResource ImageOverlayGalleryFolderDataTemplate}" >
-                    <GridView.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <ItemsWrapGrid MaximumRowsOrColumns="1"/>
-                        </ItemsPanelTemplate>
-                    </GridView.ItemsPanel>
-                </GridView>
-                <Grid Grid.Row="5" Grid.ColumnSpan="5">
-                    <TextBlock  Text="{x:Bind ViewModel.PinDisplayInformation.Photo.Description, Mode=OneWay, TargetNullValue=''}"
+                        <GridView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <ItemsWrapGrid MaximumRowsOrColumns="1"/>
+                            </ItemsPanelTemplate>
+                        </GridView.ItemsPanel>
+                    </GridView>
+                    <Grid Grid.Row="5" Grid.ColumnSpan="5">
+                        <TextBlock  Text="{x:Bind ViewModel.PinDisplayInformation.Photo.Description, Mode=OneWay, TargetNullValue=''}"
                                 TextWrapping="Wrap" Foreground="Black" Margin="0,0" FontSize="12" HorizontalAlignment="Center"/>
+                    </Grid>
                 </Grid>
             </Grid>
+            <Grid Grid.Row="0" Grid.ColumnSpan="3" Background="White">
+                <StackPanel x:Name="DatePickerSp" Orientation="Horizontal" Margin="10,0">
+                    <Button x:Name="PrevDayButton" Content="&#xE00E;" FontFamily="Segoe MDL2 Assets"  Foreground="Black"/>
+                    <DatePicker x:Name="HistoryDatePicker"  Style="{StaticResource TripTrakDatePicker}"/>
+                    <Button x:Name="NextDayButton" Content="&#xE00F;" FontFamily="Segoe MDL2 Assets"  Foreground="Black"/>
+                </StackPanel>
+            </Grid>
+
         </Grid>
-        <Grid Grid.Row="0" Grid.ColumnSpan="3" Background="White">
-            <StackPanel x:Name="DatePickerSp" Orientation="Horizontal" Margin="10,0">
-                <Button x:Name="PrevDayButton" Content="&#xE00E;" FontFamily="Segoe MDL2 Assets"  Foreground="Black"/>
-                <DatePicker x:Name="HistoryDatePicker"  Style="{StaticResource TripTrakDatePicker}"/>
-                <Button x:Name="NextDayButton" Content="&#xE00F;" FontFamily="Segoe MDL2 Assets"  Foreground="Black"/>
-            </StackPanel>
+        <Grid Background="White" Visibility="{Binding ElementName=isPhotoChecked, Path=IsChecked, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <ListView x:Name="PhotoListView"
+                          ItemTemplate="{StaticResource MyTripsItemTemplate}" >
+            </ListView>
         </Grid>
-        <StackPanel Grid.Row="1" Grid.Column="0">
+        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center">
             <Button x:Name="MapOptionButton" ToolTipService.ToolTip="map options" Content="&#xE81E;" 
+                    Visibility="{Binding ElementName=isMapChecked, Path=IsChecked, Converter={StaticResource BooleanToVisibilityConverter}}"
                     Style="{StaticResource RoundButton}"
                     Foreground="White" Background="CornflowerBlue"
                     FontFamily="Segoe MDL2 Assets" FontSize="22" Margin="10">
@@ -344,13 +355,36 @@
                     </Flyout>
                 </Button.Flyout>
             </Button>
+            <Button x:Name="ViewOptionButton" 
+                    Visibility="Collapsed"
+                    ToolTipService.ToolTip="view options" Content="&#xE890;" 
+                    Style="{StaticResource RoundButton}"
+                    Foreground="White" Background="CornflowerBlue"
+                    FontFamily="Segoe MDL2 Assets" FontSize="22" Margin="10">
+                <Button.Flyout>
+                    <Flyout Placement="Right">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <!-- My Trips button -->
+                                <RadioButton x:Name="isMapChecked"  Width="80"  Tag="&#xE707;" IsChecked="True"
+                                             Content="Maps" Style="{StaticResource SplitViewNavButtonStyle}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <!-- My Trips button -->
+                                <RadioButton x:Name="isPhotoChecked"  Width="80" Tag="&#xE8A9;"
+                                             Content="Photos" Style="{StaticResource SplitViewNavButtonStyle}" />
+                            </StackPanel>
+
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
             <Button Tag="CurrentLocation" ToolTipService.ToolTip="current location" Content="&#xE1D2;" 
                     Click="Button_Click" Style="{StaticResource RoundButton}"
                     Foreground="White" Background="CornflowerBlue"
                     FontFamily="Segoe MDL2 Assets" FontSize="22" Margin="10">
             </Button>
         </StackPanel>
-
         <Grid x:Name="EnlargeImageGrid" Grid.ColumnSpan="3" Grid.RowSpan="3" Background="Gray" Visibility="Collapsed">
             <Button x:Name="quitEnlargeButton" Click="quitEnlargeButton_Click"
                     Content="&#xE0A6;" HorizontalAlignment="Left" VerticalAlignment="Top"

@@ -76,7 +76,6 @@ namespace TripTrak_2016.Views
 
         private void List_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
             var list = sender as ListView;
             var tripItem = list.SelectedItem as Trip;
             App.PageName = tripItem.Name;

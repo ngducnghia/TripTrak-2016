@@ -9,6 +9,20 @@ namespace TripTrak_2016.Model
 {
     public class Trip : BindableBase
     {
+        private List<LocationPin> pin= new List<LocationPin>();
+        /// <summary>
+        /// Gets or sets the locations represented on the map; this is a superset of Locations, and 
+        /// includes the current location and any locations being added but not yet saved. 
+        /// </summary>
+        public List<LocationPin> Pin
+        {
+            get { return this.pin; }
+            set
+            {
+                this.SetProperty(ref this.pin, value);
+            }
+        }
+
         private DateTimeOffset dateCreated = DateTimeOffset.Now;
         /// <summary>
         /// Gets or sets a value that indicates when the travel info was last updated. 

@@ -85,7 +85,7 @@ namespace TripTrak_2016.Views
 
                 //update location info (address) of the selected Pin
                 await LocationHelper.TryUpdateMissingLocationInfoAsync(this.ViewModel.PinDisplayInformation, null);
-                ViewModel.drawPolylines(this.ViewModel.PinDisplayInformation, false, this.InputMap);
+            //    ViewModel.drawPolylines(this.ViewModel.PinDisplayInformation, false, this.InputMap);
 
 
                 //update route and time to destination
@@ -180,12 +180,15 @@ namespace TripTrak_2016.Views
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-
+            HistoryDatePicker.MaxYear = DateTime.Now;
+            HistoryDatePicker.MinYear = DateTime.Now.AddYears(-1);
             if (App.PageName != "TripTrak")
             {
+                ViewOptionButton.Visibility = Visibility.Visible;
                 var tripItem = e.Parameter as Trip;
                 HistoryDatePicker.Date = tripItem.StartPin.DateCreated;
-                HistoryDatePicker.MaxYear = tripItem.DateCreated;
+                if (tripItem.Pin.Count > 0)
+                    PhotoListView.ItemsSource = tripItem.Pin;
             }
             else
             {
@@ -342,7 +345,7 @@ namespace TripTrak_2016.Views
                         this.ViewModel.CheckedLocations.Remove(currentLoc);
                 }
                 this.InputMap.Center = new Geopoint(currentLocation.Position);
-                this.InputMap.ZoomLevel = 15;
+                this.InputMap.ZoomLevel = 20;
                 this.ViewModel.PinDisplayInformation = new LocationPin { Position = currentLocation.Position, IsCurrentLocation = true };
                 this.ViewModel.CheckedLocations.Add(new LocationPin { Position = currentLocation.Position, IsCurrentLocation = true });
                 await LocationHelper.TryUpdateMissingLocationInfoAsync(this.ViewModel.PinDisplayInformation, null);

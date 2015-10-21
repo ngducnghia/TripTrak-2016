@@ -81,7 +81,7 @@ namespace TripTrak_2016.CustomControl
                 {
                     foreach (LocationPin pin in pins)
                     {
-                        if (pin.IsCheckPoint)
+                        if (pin.IsCheckPoint && pin.Photo!=null)
                         {
                             this.ViewModel.CheckedLocations.Add(pin);
                         }
@@ -94,6 +94,7 @@ namespace TripTrak_2016.CustomControl
                 var numberOfPolylines = ViewModel.drawPolylines(this.ViewModel.CheckedLocations, this.InputMap);
                 await ViewModel.setViewOnMap(numberOfPolylines, this.InputMap);
             }
+            tripItem.Pin = this.ViewModel.CheckedLocations.ToList();
             return ret;
         }
     }
