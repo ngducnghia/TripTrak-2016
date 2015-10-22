@@ -16,7 +16,7 @@
             <Setter Property="Padding" Value="0 0 0 0" />
         </Style>
         <DataTemplate x:Key="MyTripsItemTemplate">
-            <controls:PhotoViewItem/>
+            <controls:PhotoViewItem Margin="0,0,0,3"/>
         </DataTemplate>
         <DataTemplate x:Key="InputMapItemTemplate" x:DataType="loc:LocationPin">
             <Grid>
@@ -326,7 +326,7 @@
             </Grid>
 
         </Grid>
-        <Grid Background="White" Visibility="{Binding ElementName=isPhotoChecked, Path=IsChecked, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <Grid Background="LightGray" Visibility="{Binding ElementName=isPhotoChecked, Path=IsChecked, Converter={StaticResource BooleanToVisibilityConverter}}">
             <ListView x:Name="PhotoListView"
                           ItemTemplate="{StaticResource MyTripsItemTemplate}" >
             </ListView>

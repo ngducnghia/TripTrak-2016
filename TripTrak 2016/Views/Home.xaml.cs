@@ -188,6 +188,10 @@ namespace TripTrak_2016.Views
                 var tripItem = e.Parameter as Trip;
                 HistoryDatePicker.Date = tripItem.StartPin.DateCreated;
                 if (tripItem.Pin.Count > 0)
+                {
+                    foreach(LocationPin pin in tripItem.Pin)
+                        await LocationHelper.TryUpdateMissingLocationInfoAsync(pin, null);
+                }
                     PhotoListView.ItemsSource = tripItem.Pin;
             }
             else
