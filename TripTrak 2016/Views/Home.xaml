@@ -381,7 +381,8 @@
                     </Flyout>
                 </Button.Flyout>
             </Button>
-            <Button Tag="CurrentLocation" ToolTipService.ToolTip="current location" Content="&#xE1D2;" 
+            <Button Visibility="{Binding ElementName=isMapChecked, Path=IsChecked, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Tag="CurrentLocation" ToolTipService.ToolTip="current location" Content="&#xE1D2;" 
                     Click="Button_Click" Style="{StaticResource RoundButton}"
                     Foreground="White" Background="CornflowerBlue"
                     FontFamily="Segoe MDL2 Assets" FontSize="22" Margin="10">
