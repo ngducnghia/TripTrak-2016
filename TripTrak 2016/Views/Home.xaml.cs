@@ -233,15 +233,28 @@ namespace TripTrak_2016.Views
         {
             var _ = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
-                if (args.Position.Coordinate.Accuracy < 55)
+            if (args.Position.Coordinate.Accuracy < 55)
+            {
+                var item = new LocationPin
                 {
-                    var item = new LocationPin
+                    Position = args.Position.Coordinate.Point.Position,
+                    Speed = args.Position.Coordinate.Speed
+                };
+                if (DateTime.Now.Date == HistoryDatePicker.Date.Date)
+                {
+                    if (this.ViewModel.CheckedLocations.Count > 0)
                     {
-                        Position = args.Position.Coordinate.Point.Position,
-                        Speed = args.Position.Coordinate.Speed
-                    };
-                    if (DateTime.Now.Date == HistoryDatePicker.Date.Date)
-                        this.ViewModel.PinnedLocations.Add(item);
+                        var currentLoc = this.ViewModel.CheckedLocations.FirstOrDefault(loc => loc.IsCurrentLocation == true);
+                        if (currentLoc != null && currentLoc.IsCurrentLocation)
+                            this.ViewModel.CheckedLocations.Remove(currentLoc);
+                    }
+                    this.ViewModel.PinnedLocations.Add(item);
+                    this.ViewModel.CheckedLocations.Add(new LocationPin { Position = item.Position, IsCurrentLocation = true });
+                    bool isInView = false;
+                    this.InputMap.IsLocationInView(new Geopoint(item.Position),out isInView);
+                        if(isInView)
+                            this.InputMap.Center = new Geopoint(item.Position);
+                    }
                     await localData.InsertLocationDataAsync(item);
                 }
             });
@@ -348,10 +361,11 @@ namespace TripTrak_2016.Views
                     if (currentLoc != null && currentLoc.IsCurrentLocation)
                         this.ViewModel.CheckedLocations.Remove(currentLoc);
                 }
+                this.ViewModel.CheckedLocations.Add(new LocationPin { Position = currentLocation.Position, IsCurrentLocation = true });
+
+                this.ViewModel.PinDisplayInformation = new LocationPin { Position = currentLocation.Position, IsCurrentLocation = true };
                 this.InputMap.Center = new Geopoint(currentLocation.Position);
                 this.InputMap.ZoomLevel = 20;
-                this.ViewModel.PinDisplayInformation = new LocationPin { Position = currentLocation.Position, IsCurrentLocation = true };
-                this.ViewModel.CheckedLocations.Add(new LocationPin { Position = currentLocation.Position, IsCurrentLocation = true });
                 await LocationHelper.TryUpdateMissingLocationInfoAsync(this.ViewModel.PinDisplayInformation, null);
             }
         }

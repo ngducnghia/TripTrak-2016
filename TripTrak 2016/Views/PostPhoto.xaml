@@ -38,7 +38,13 @@
 
             <TextBlock Text="&#xE104;" Margin="10,0"  FontFamily="Segoe MDL2 Assets" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0"/>
             <TextBox x:Name="DescriptionTb" PlaceholderText="Say something..." BorderThickness="0" Grid.Row="0" Grid.Column="1"/>
-            <TextBlock Text="&#xE12D;" Margin="10,0" FontFamily="Segoe MDL2 Assets" Foreground="Blue" VerticalAlignment="Center" Grid.Row="0" Grid.Column="2" FontSize="20"/>
+            <ComboBox BorderThickness="0" Padding="0" Foreground="Blue" FontSize="20"
+                      Margin="10,0" VerticalAlignment="Center" Grid.Row="0" Grid.Column="2"  FontFamily="Segoe MDL2 Assets">
+                <ComboBoxItem Content="&#xE12D;"  FontFamily="Segoe MDL2 Assets" Foreground="Blue" FontSize="20"/>
+                <ComboBoxItem Content="&#xE80F;"  FontFamily="Segoe MDL2 Assets" Foreground="Blue" FontSize="20"/>
+                <ComboBoxItem Content="&#xE753;"  FontFamily="Segoe MDL2 Assets" Foreground="Blue" FontSize="20"/>
+                <ComboBoxItem Content="&#xE899;"  FontFamily="Segoe MDL2 Assets" Foreground="Blue" FontSize="20"/>
+            </ComboBox>
             <Border BorderBrush="Gray" BorderThickness="1.5"
                     Grid.Row="1"  Margin="0,5" Background="Gray" Grid.ColumnSpan="3"/>
 
