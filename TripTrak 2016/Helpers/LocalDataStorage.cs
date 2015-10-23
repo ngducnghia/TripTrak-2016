@@ -14,7 +14,7 @@ namespace TripTrak_2016.Helpers
     class LocalDataStorage
     {
         private const string dataFileName = "TripTrakPins";
-        private const string tripsFileName = "TripTrakTips";
+        private const string tripsFileName = "TripTrakMyTrips_Test1";
         public static string GenerateFileName(string context, DateTime date)
         {
             return context + "_" + date.ToString("yyyyMMdd") + ".txt";
@@ -140,6 +140,7 @@ namespace TripTrak_2016.Helpers
                 tripsFileName, CreationCollisionOption.ReplaceExisting);
             using (MemoryStream stream = new MemoryStream())
             {
+
                 var serializer = new DataContractJsonSerializer(typeof(List<Trip>));
                 serializer.WriteObject(stream, trips.ToList());
                 stream.Position = 0;
@@ -149,6 +150,10 @@ namespace TripTrak_2016.Helpers
                     locationString = locationString.Replace("[", "");
                     locationString = locationString.Replace("]", "");
                     locationString = locationString + ",";
+                    if (trips.Count() == 0)
+                    {
+                        locationString = string.Empty;
+                    }
                     await FileIO.WriteTextAsync(sampleFile, locationString);
                 }
             }

@@ -14,6 +14,7 @@ namespace TripTrak_2016.Model
         /// Gets or sets the locations represented on the map; this is a superset of Locations, and 
         /// includes the current location and any locations being added but not yet saved. 
         /// </summary>
+        [IgnoreDataMember]
         public List<LocationPin> Pin
         {
             get { return this.pin; }

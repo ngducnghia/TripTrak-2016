@@ -86,8 +86,17 @@ namespace TripTrak_2016.Views
                     oldPin.IsSelected = true;
                     selectedImage.Source = await PhotoHelper.getImageSource(this.ViewModel.CheckedLocations[0].Photo.ImageName);
                 }
-                else
+                else if(this.ViewModel.PinnedLocations.Count>0)
+                {
                     oldPin = this.ViewModel.PinnedLocations[0];
+                }
+                else
+                {
+                    oldPin = new LocationPin
+                    {
+                        DateCreated = HistoryDatePicker.Date,
+                    };
+                }
             }
             else if (App.PageName.Equals("End Trip"))
             {
@@ -105,8 +114,16 @@ namespace TripTrak_2016.Views
                     oldPin.IsSelected = true;
                     selectedImage.Source = await PhotoHelper.getImageSource(this.ViewModel.CheckedLocations[this.ViewModel.CheckedLocations.Count - 1].Photo.ImageName);
                 }
+                else if (this.ViewModel.PinnedLocations.Count > 0)
+                {
+                    oldPin = this.ViewModel.PinnedLocations[this.ViewModel.PinnedLocations.Count-1];
+                }
                 else
-                    oldPin = this.ViewModel.PinnedLocations[0];
+                {
+                    oldPin = new LocationPin {
+                        DateCreated = HistoryDatePicker.Date,
+                    };
+                }
             }
 
             if (e.NavigationMode == NavigationMode.New)
@@ -140,8 +157,17 @@ namespace TripTrak_2016.Views
                     oldPin.IsSelected = true;
                     selectedImage.Source = await PhotoHelper.getImageSource(this.ViewModel.CheckedLocations[0].Photo.ImageName);
                 }
-                else
+                else if (this.ViewModel.PinnedLocations.Count > 0)
+                {
                     oldPin = this.ViewModel.PinnedLocations[0];
+                }
+                else
+                {
+                    oldPin = new LocationPin
+                    {
+                        DateCreated = HistoryDatePicker.Date,
+                    };
+                }
             }
             else if (App.PageName.Equals("End Trip"))
             {
@@ -151,8 +177,17 @@ namespace TripTrak_2016.Views
                     oldPin.IsSelected = true;
                     selectedImage.Source = await PhotoHelper.getImageSource(this.ViewModel.CheckedLocations[this.ViewModel.CheckedLocations.Count - 1].Photo.ImageName);
                 }
-                else
+                else if (this.ViewModel.PinnedLocations.Count > 0)
+                {
                     oldPin = this.ViewModel.PinnedLocations[this.ViewModel.PinnedLocations.Count - 1];
+                }
+                else
+                {
+                    oldPin = new LocationPin
+                    {
+                        DateCreated = HistoryDatePicker.Date,
+                    };
+                }
             }
 
             HistoryDatePicker.IsHitTestVisible = true;
@@ -165,6 +200,7 @@ namespace TripTrak_2016.Views
             this.ViewModel.CheckedLocations.Clear();
             this.ViewModel.PinnedLocations.Clear();
             this.InputMap.MapElements.Clear();
+            selectedImage.Source = null;
             allPins = await localData.GetLocationPinsByDate(HistoryDatePicker.Date.Date);
             if (allPins != null && allPins.Count > 0)
             {
