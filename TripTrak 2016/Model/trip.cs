@@ -9,7 +9,7 @@ namespace TripTrak_2016.Model
 {
     public class Trip : BindableBase
     {
-        private List<LocationPin> pin= new List<LocationPin>();
+        private List<LocationPin> pin = new List<LocationPin>();
         /// <summary>
         /// Gets or sets the locations represented on the map; this is a superset of Locations, and 
         /// includes the current location and any locations being added but not yet saved. 
@@ -23,6 +23,38 @@ namespace TripTrak_2016.Model
                 this.SetProperty(ref this.pin, value);
             }
         }
+
+        /// <summary>
+        /// Gets a display-string representation of the DateCreated time. 
+        /// </summary>
+        [IgnoreDataMember]
+        public string Duration
+        {
+            get
+            {
+                if (!isOnGoingTrip)
+                {
+                    TimeSpan tripDur = EndPin.DateCreated - StartPin.DateCreated;
+                    return tripDur.Days + " days " + tripDur.Hours + " hrs";
+                }
+                else
+                {
+                    TimeSpan tripDur = DateTimeOffset.Now - StartPin.DateCreated;
+                    return tripDur.Days + " days " + tripDur.Hours + " hrs";
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets a display-string representation of the DateCreated time. 
+        /// </summary>
+        [IgnoreDataMember]
+        public string FormattedDateCreatedTime =>
+            new TimeSpan(this.DateCreated.Hour, this.DateCreated.Minute, 0).ToString("hh\\:mm");
+
+        [IgnoreDataMember]
+        public string newFormattedDateCreatedTime => this.DateCreated.ToString("MMMM dd, yyyy") + "* ";
+
 
         private DateTimeOffset dateCreated = DateTimeOffset.Now;
         /// <summary>
@@ -71,7 +103,7 @@ namespace TripTrak_2016.Model
             set { this.SetProperty(ref this.type, value); }
         }
         [IgnoreDataMember]
-        public bool isOnGoingTrip => this.Type== "On-going" ? true : false;
+        public bool isOnGoingTrip => this.Type == "On-going" ? true : false;
 
         private string shareWith;
         public string ShareWith

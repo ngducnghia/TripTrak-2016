@@ -10,6 +10,7 @@ using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.ExtendedExecution;
 using Windows.Devices.Geolocation;
 using Windows.Networking.Connectivity;
+using Windows.Services.Maps;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI;
@@ -85,7 +86,7 @@ namespace TripTrak_2016.Views
 
                 //update location info (address) of the selected Pin
                 await LocationHelper.TryUpdateMissingLocationInfoAsync(this.ViewModel.PinDisplayInformation, null);
-            //    ViewModel.drawPolylines(this.ViewModel.PinDisplayInformation, false, this.InputMap);
+                //    ViewModel.drawPolylines(this.ViewModel.PinDisplayInformation, false, this.InputMap);
 
 
                 //update route and time to destination
@@ -186,13 +187,23 @@ namespace TripTrak_2016.Views
             {
                 ViewOptionButton.Visibility = Visibility.Visible;
                 var tripItem = e.Parameter as Trip;
+                List<Geopoint> listGeos = new List<Geopoint>();
                 HistoryDatePicker.Date = tripItem.StartPin.DateCreated;
                 if (tripItem.Pin.Count > 0)
                 {
-                    foreach(LocationPin pin in tripItem.Pin)
+                    foreach (LocationPin pin in tripItem.Pin)
+                    {
                         await LocationHelper.TryUpdateMissingLocationInfoAsync(pin, null);
+                        listGeos.Add(new Geopoint(pin.Position));
+                    }
                 }
-                    PhotoListView.ItemsSource = tripItem.Pin;
+                PhotoListView.ItemsSource = tripItem.Pin;
+                TripDescTbl.Text = tripItem.Description;
+                TripItemCheckinTbl.Text = tripItem.Pin.Count + " check-ins";
+                TripItemTimeTbl.Text = tripItem.Duration;
+                var length = (await MapRouteFinder.GetDrivingRouteFromWaypointsAsync(listGeos)).Route.LengthInMeters;
+                length = Math.Round(length / 1609, 0);
+                TripItemLenghtTbl.Text = length + " miles";
             }
             else
             {
@@ -205,7 +216,7 @@ namespace TripTrak_2016.Views
             }
             // Start handling Geolocator and network status changes after loading the data 
             // so that the view doesn't get refreshed before there is something to show.
-           
+
             NetworkInformation.NetworkStatusChanged += NetworkInformation_NetworkStatusChanged;
             LocationHelper.Geolocator.PositionChanged += Geolocator_PositionChanged;
             StartLocationExtensionSession();
@@ -233,26 +244,26 @@ namespace TripTrak_2016.Views
         {
             var _ = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
-            if (args.Position.Coordinate.Accuracy < 55)
-            {
-                var item = new LocationPin
+                if (args.Position.Coordinate.Accuracy < 55)
                 {
-                    Position = args.Position.Coordinate.Point.Position,
-                    Speed = args.Position.Coordinate.Speed
-                };
-                if (DateTime.Now.Date == HistoryDatePicker.Date.Date)
-                {
-                    if (this.ViewModel.CheckedLocations.Count > 0)
+                    var item = new LocationPin
                     {
-                        var currentLoc = this.ViewModel.CheckedLocations.FirstOrDefault(loc => loc.IsCurrentLocation == true);
-                        if (currentLoc != null && currentLoc.IsCurrentLocation)
-                            this.ViewModel.CheckedLocations.Remove(currentLoc);
-                    }
-                    this.ViewModel.PinnedLocations.Add(item);
-                    this.ViewModel.CheckedLocations.Add(new LocationPin { Position = item.Position, IsCurrentLocation = true });
-                    bool isInView = false;
-                    this.InputMap.IsLocationInView(new Geopoint(item.Position),out isInView);
-                        if(isInView)
+                        Position = args.Position.Coordinate.Point.Position,
+                        Speed = args.Position.Coordinate.Speed
+                    };
+                    if (DateTime.Now.Date == HistoryDatePicker.Date.Date)
+                    {
+                        if (this.ViewModel.CheckedLocations.Count > 0)
+                        {
+                            var currentLoc = this.ViewModel.CheckedLocations.FirstOrDefault(loc => loc.IsCurrentLocation == true);
+                            if (currentLoc != null && currentLoc.IsCurrentLocation)
+                                this.ViewModel.CheckedLocations.Remove(currentLoc);
+                        }
+                        this.ViewModel.PinnedLocations.Add(item);
+                        this.ViewModel.CheckedLocations.Add(new LocationPin { Position = item.Position, IsCurrentLocation = true });
+                        bool isInView = false;
+                        this.InputMap.IsLocationInView(new Geopoint(item.Position), out isInView);
+                        if (isInView)
                             this.InputMap.Center = new Geopoint(item.Position);
                     }
                     await localData.InsertLocationDataAsync(item);

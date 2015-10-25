@@ -327,7 +327,35 @@
 
         </Grid>
         <Grid Background="LightGray" Visibility="{Binding ElementName=isPhotoChecked, Path=IsChecked, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <ListView x:Name="PhotoListView"
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0" Background="White" Margin="10,0,10,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Margin="5,0,0,0" Grid.Row="0" Grid.ColumnSpan="2" Name="TripDescTbl"/>
+                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
+                    <TextBlock Text="&#xE909;" FontSize="16"  Foreground="Blue" FontFamily="Segoe MDL2 Assets" Margin="5"/>
+                    <TextBlock Name="TripItemLenghtTbl" FontSize="16" />
+                </StackPanel>
+                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock Text="&#xE890;" FontSize="16" Foreground="Blue" FontFamily="Segoe MDL2 Assets" Margin="5"/>
+                    <TextBlock Name="TripItemTimeTbl" FontSize="16" />
+                </StackPanel>
+                <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal">
+                    <TextBlock Text="&#xE722;" FontSize="16"  Foreground="Blue" FontFamily="Segoe MDL2 Assets" Margin="5"/>
+                    <TextBlock Name="TripItemCheckinTbl" FontSize="16" />
+                </StackPanel>
+            </Grid>
+            <ListView x:Name="PhotoListView" Grid.Row="1"
                           ItemTemplate="{StaticResource MyTripsItemTemplate}" >
             </ListView>
         </Grid>
